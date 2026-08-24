@@ -3,6 +3,6 @@
     "releaseDate": "2026-08-24",
     "releaseNotes": "Teste de atualização PATCH.",
     "files": [
-        "library/scripts/prodPreparation.jsx"
+        "scripts/prodPreparation.jsx"
     ]
 }
