@@ -1,3 +1,8 @@
 {
-	"version": "0.3.0"
+    "version": "1.0.1",
+    "releaseDate": "2026-08-24",
+    "releaseNotes": "Teste de atualização PATCH.",
+    "files": [
+        "library/scripts/prodPreparation.jsx"
+    ]
 }
