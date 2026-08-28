@@ -3,6 +3,6 @@
     "releaseDate": "2026-08-24",
     "releaseNotes": "Teste de atualização PATCH.",
     "files": [
-        "scripts/MakeOutline.jsx.jsx"
+        "scripts/MakeOutline.jsx"
     ]
 }
