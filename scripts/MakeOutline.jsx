@@ -1,3 +1,5 @@
+Alert('teste');
+
 var RESULT = "";
 var doc = null;
 var black = null;
