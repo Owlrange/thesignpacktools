@@ -3,6 +3,6 @@
     "releaseDate": "2026-08-24",
     "releaseNotes": "Teste de atualização PATCH.",
     "files": [
-        "scripts/ProdPreparation.jsx"
+        "scripts/MakeOutline.jsx.jsx"
     ]
 }
