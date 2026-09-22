@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ExtensionManifest Version="7.0"
+    ExtensionBundleId="com.caio.TheSignPackTools"
+    ExtensionBundleVersion="1.0.0"
+    ExtensionBundleName="The Sign Pack Tools">
+
+    <ExtensionList>
+
+        <Extension
+            Id="com.caio.TheSignPackTools.panel"
+            Version="1.0.0"/>
+
+        <Extension
+            Id="com.caio.TheSignPackTools.preflight"
+            Version="1.0.0"/>
+
+    </ExtensionList>
+
+    <ExecutionEnvironment>
+
+        <HostList>
+            <Host Name="ILST" Version="[30.0,99.9]"/>
+        </HostList>
+
+        <LocaleList>
+            <Locale Code="All"/>
+        </LocaleList>
+
+        <RequiredRuntimeList>
+            <RequiredRuntime Name="CSXS" Version="12.0"/>
+        </RequiredRuntimeList>
+
+    </ExecutionEnvironment>
+
+    <DispatchInfoList>
+
+        <!-- MAIN PANEL -->
+
+        <Extension Id="com.caio.TheSignPackTools.panel">
+
+            <DispatchInfo>
+
+                <Resources>
+
+                    <MainPath>./client/index.html</MainPath>
+
+                    <ScriptPath>./host/main.jsx</ScriptPath>
+
+                </Resources>
+
+                <Lifecycle>
+                    <AutoVisible>true</AutoVisible>
+                </Lifecycle>
+
+                <UI>
+
+                    <Type>Panel</Type>
+
+                    <Menu>The Sign Pack Tools</Menu>
+
+                    <Icons>
+                        <Icon Type="Normal">./client/icons/IconLight.png</Icon>
+                        <Icon Type="DarkNormal">./client/icons/IconDark.png</Icon>
+                    </Icons>
+
+                    <Geometry>
+
+                        <Size>
+                            <Height>300</Height>
+                            <Width>300</Width>
+                        </Size>
+
+                        <MinSize>
+                            <Height>100</Height>
+                            <Width>100</Width>
+                        </MinSize>
+
+                        <MaxSize>
+                            <Height>2000</Height>
+                            <Width>2000</Width>
+                        </MaxSize>
+
+                    </Geometry>
+
+                </UI>
+
+            </DispatchInfo>
+
+        </Extension>
+
+
+        <!-- PRE-FLIGHT WINDOW -->
+
+       <Extension Id="com.caio.TheSignPackTools.preflight">
+			<DispatchInfo>
+				<Resources>
+					<MainPath>./client/preflight.html</MainPath>
+					<ScriptPath>./host/main_preflight.jsx</ScriptPath>
+				</Resources>
+
+				<Lifecycle>
+					<AutoVisible>false</AutoVisible>
+				</Lifecycle>
+
+				<UI>
+					<Type>Panel</Type>
+					<Menu>The Sign Pack Tools - Pre-Flight</Menu>
+					
+					<Icons>
+                        <Icon Type="Normal">./client/icons/PF_IconLight.png</Icon>
+                        <Icon Type="DarkNormal">./client/icons/PF_IconDark.png</Icon>
+                    </Icons>
+
+					<Geometry>
+						<Size>
+							<Height>500</Height>
+							<Width>700</Width>
+						</Size>
+
+						<MinSize>
+							<Height>300</Height>
+							<Width>400</Width>
+						</MinSize>
+
+						<MaxSize>
+							<Height>1200</Height>
+							<Width>1600</Width>
+						</MaxSize>
+					</Geometry>
+				</UI>
+			</DispatchInfo>
+		</Extension>
+
+    </DispatchInfoList>
+
+</ExtensionManifest>
