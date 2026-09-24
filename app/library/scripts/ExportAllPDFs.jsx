@@ -4,7 +4,7 @@ var RESULT = "";
 var doc = null;
 var originalFilePath = null;
 
-function exportProductionFilesV9() {
+function main() {
     if (app.documents.length === 0) {
         RESULT = "ERROR: Please open a document first.";
         return;
@@ -21,7 +21,7 @@ function exportProductionFilesV9() {
     }
 
     var docName = doc.name.replace(/\.[^\.]+$/, "");
-    var cleanDocName = docName.replace(/[\/\\:*?"<>|]/g, "-");
+    var cleanDocName = docName.replace(/[\\/:*?"<>|]/g, "-");
     var pdfPresets = app.PDFPresetsList;
 
     if (!pdfPresets || pdfPresets.length === 0) {
@@ -29,7 +29,7 @@ function exportProductionFilesV9() {
         return;
     }
 
-    var win = new Window("dialog", "Fast Export Production Files v9");
+    var win = new Window("dialog", "Fast Export Production Files v10");
     win.orientation = "column";
     win.alignChildren = ["fill", "top"];
     win.margins = 20;
@@ -38,7 +38,7 @@ function exportProductionFilesV9() {
     pnlSettings.orientation = "column";
     pnlSettings.alignChildren = ["left", "top"];
     pnlSettings.margins = 15;
-    pnlSettings.spacing = 10;
+    pnlSettings.spacing = 8;
 
     pnlSettings.add("statictext", undefined, "1. Select PDF Preset:");
     var dropdownPresets = pnlSettings.add("dropdownlist", undefined, pdfPresets);
@@ -68,35 +68,85 @@ function exportProductionFilesV9() {
     btnFolder.onClick = function () {
         var startFolder = new Folder(doc.path.fsName);
         var selectedFolder = Folder.selectDialog("Select destination folder", startFolder);
-
-        if (selectedFolder) {
-            txtFolder.text = selectedFolder.fsName;
-        }
+        if (selectedFolder) txtFolder.text = selectedFolder.fsName;
     };
 
     pnlSettings.add("statictext", undefined, "3. Custom File Name:");
     var txtCustomName = pnlSettings.add("edittext", undefined, cleanDocName + " ");
     txtCustomName.characters = 35;
 
-    var firstAbName = doc.artboards[0].name.replace(/[\/\\:*?"<>|]/g, "-");
-    var txtPreview = pnlSettings.add(
+    pnlSettings.add("statictext", undefined, "4. Artboards:");
+    var grpSelection = pnlSettings.add("group");
+    grpSelection.orientation = "column";
+    grpSelection.alignChildren = ["fill", "top"];
+
+    var selectionButtons = grpSelection.add("group");
+    selectionButtons.alignment = "center";
+
+    var btnSelectAll = selectionButtons.add("button", undefined, "Select All");
+    var btnSelectNone = selectionButtons.add("button", undefined, "Select None");
+
+    var list = grpSelection.add("listbox", undefined, undefined, {multiselect: true});
+    list.preferredSize = [360, 220];
+
+    for (var i = 0; i < doc.artboards.length; i++) {
+        var item = list.add("item", doc.artboards[i].name);
+        item.artboardIndex = i;
+        item.selected = true;
+    }
+
+    var counter = grpSelection.add(
         "statictext",
         undefined,
-        "Preview: " + txtCustomName.text + firstAbName + ".pdf"
+        doc.artboards.length + " of " + doc.artboards.length + " selected"
     );
-    txtPreview.preferredSize.width = 350;
 
-    txtCustomName.onChanging = function () {
-        var currentText = txtCustomName.text;
+    function getSelectedIndices() {
+        var selection = list.selection;
+        var result = [];
 
-        if (currentText === "") {
-            currentText = cleanDocName + " ";
+        if (!selection) return result;
+
+        if (!(selection instanceof Array)) selection = [selection];
+
+        for (var s = 0; s < selection.length; s++) {
+            result.push(selection[s].artboardIndex);
         }
 
-        txtPreview.text = "Preview: " + currentText + firstAbName + ".pdf";
+        result.sort(function(a, b) { return a - b; });
+        return result;
+    }
+
+    function updateCounter() {
+        counter.text = getSelectedIndices().length + " of " +
+            doc.artboards.length + " selected";
+        updatePreview();
+    }
+
+    btnSelectAll.onClick = function () {
+        for (var a = 0; a < list.items.length; a++) {
+            list.items[a].selected = true;
+        }
+        updateCounter();
     };
 
-    pnlSettings.add("statictext", undefined, "4. Additional Settings:");
+    btnSelectNone.onClick = function () {
+        for (var a = 0; a < list.items.length; a++) {
+            list.items[a].selected = false;
+        }
+        updateCounter();
+    };
+
+    list.onChange = updateCounter;
+
+    pnlSettings.add("statictext", undefined, "5. Additional Settings:");
+
+    var chkGroup = pnlSettings.add(
+        "checkbox",
+        undefined,
+        "Group selected artboards into one file"
+    );
+    chkGroup.value = false;
 
     var chkSaveAi = pnlSettings.add("checkbox", undefined, "Also save as .ai file");
     chkSaveAi.value = true;
@@ -110,6 +160,40 @@ function exportProductionFilesV9() {
         "Prevent PDFs from opening automatically"
     );
     chkDisableView.value = false;
+
+    var txtPreview = pnlSettings.add("statictext", undefined, "");
+    txtPreview.preferredSize.width = 400;
+
+    function cleanName(name) {
+        return name.replace(/[\\/:*?"<>|]/g, "-");
+    }
+
+    function getPrefix() {
+        var value = txtCustomName.text;
+        if (value === "") value = cleanDocName + " ";
+        return value;
+    }
+
+    function updatePreview() {
+        var selected = getSelectedIndices();
+        var prefix = getPrefix();
+
+        if (selected.length === 0) {
+            txtPreview.text = "Preview: No artboards selected";
+            return;
+        }
+
+        if (chkGroup.value) {
+            txtPreview.text = "Preview: " + prefix + "Grouped.pdf";
+        } else {
+            var firstName = cleanName(doc.artboards[selected[0]].name);
+            txtPreview.text = "Preview: " + prefix + firstName + ".pdf";
+        }
+    }
+
+    txtCustomName.onChanging = updatePreview;
+    chkGroup.onClick = updatePreview;
+    updatePreview();
 
     var warningGroup = win.add("group");
     warningGroup.orientation = "column";
@@ -128,7 +212,7 @@ function exportProductionFilesV9() {
     var btnCancel = grpButtons.add("button", undefined, "Cancel");
 
     btnCancel.onClick = function () {
-        RESULT = "CANCELLED";
+        RESULT = "WARNING: Operation cancelled.";
         win.close();
     };
 
@@ -139,7 +223,6 @@ function exportProductionFilesV9() {
         }
 
         var destFolder = new Folder(txtFolder.text);
-
         if (!destFolder.exists) {
             RESULT = "ERROR: Folder does not exist.";
             return;
@@ -150,6 +233,13 @@ function exportProductionFilesV9() {
             return;
         }
 
+        var selectedIndices = getSelectedIndices();
+
+        if (selectedIndices.length === 0) {
+            RESULT = "ERROR: Select at least one artboard.";
+            return;
+        }
+
         var presetName = dropdownPresets.selection.text;
 
         try {
@@ -157,33 +247,30 @@ function exportProductionFilesV9() {
         } catch (e) {}
 
         var customNameInput = txtCustomName.text;
+        var groupSelected = chkGroup.value;
         var saveAi = chkSaveAi.value;
         var saveEps = chkSaveEps.value;
         var preventOpening = chkDisableView.value;
-        var total = doc.artboards.length;
+
+        var total = selectedIndices.length;
         var exportedCount = 0;
         var prevInteractionLevel = app.userInteractionLevel;
 
         var layerCleanupFailures = [];
         var linkEmbedFailures = [];
         var bleedFailures = [];
+        var epsCount = 0;
 
         var masterTempFile = null;
         var tempAiFile = null;
         var tempDoc = null;
 
         function fastUnlock(layers) {
-            var len = layers.length;
-
-            for (var L = 0; L < len; L++) {
+            for (var L = 0; L < layers.length; L++) {
                 var layer = layers[L];
-
                 if (layer.locked) layer.locked = false;
                 if (!layer.visible) layer.visible = true;
-
-                if (layer.layers.length > 0) {
-                    fastUnlock(layer.layers);
-                }
+                if (layer.layers.length > 0) fastUnlock(layer.layers);
             }
         }
 
@@ -195,16 +282,12 @@ function exportProductionFilesV9() {
                     removeEmptyLayers(currentLayer.layers);
                 }
 
-                if (
-                    currentLayer.pageItems.length === 0 &&
-                    currentLayer.layers.length === 0
-                ) {
+                if (currentLayer.pageItems.length === 0 &&
+                    currentLayer.layers.length === 0) {
                     try {
                         currentLayer.remove();
                     } catch (e) {
-                        try {
-                            layerCleanupFailures.push(currentLayer.name);
-                        } catch (e2) {}
+                        try { layerCleanupFailures.push(currentLayer.name); } catch (e2) {}
                     }
                 }
             }
@@ -223,11 +306,9 @@ function exportProductionFilesV9() {
                             return pi.geometricBounds;
                         }
 
-                        if (
-                            pi.typename === "CompoundPathItem" &&
+                        if (pi.typename === "CompoundPathItem" &&
                             pi.pathItems.length > 0 &&
-                            pi.pathItems[0].clipping
-                        ) {
+                            pi.pathItems[0].clipping) {
                             return pi.geometricBounds;
                         }
                     }
@@ -237,15 +318,12 @@ function exportProductionFilesV9() {
 
                 for (var g = 0; g < item.pageItems.length; g++) {
                     var childBounds = getTrueBounds(item.pageItems[g]);
-
                     if (!childBounds) continue;
 
                     if (!unionBounds) {
                         unionBounds = [
-                            childBounds[0],
-                            childBounds[1],
-                            childBounds[2],
-                            childBounds[3]
+                            childBounds[0], childBounds[1],
+                            childBounds[2], childBounds[3]
                         ];
                     } else {
                         if (childBounds[0] < unionBounds[0]) unionBounds[0] = childBounds[0];
@@ -265,9 +343,7 @@ function exportProductionFilesV9() {
             var names = [];
 
             for (var b = 0; b < items.length; b++) {
-                var item = items[b];
-                var itemBounds = getTrueBounds(item);
-
+                var itemBounds = getTrueBounds(items[b]);
                 if (!itemBounds) continue;
 
                 var overlaps = !(
@@ -286,12 +362,11 @@ function exportProductionFilesV9() {
                     itemBounds[3] >= abBounds[3];
 
                 if (!fullyInside) {
-                    var itemName =
-                        item.name && item.name !== ""
-                            ? item.name
-                            : item.typename;
-
-                    names.push(itemName);
+                    names.push(
+                        items[b].name && items[b].name !== ""
+                            ? items[b].name
+                            : items[b].typename
+                    );
                 }
             }
 
@@ -300,32 +375,126 @@ function exportProductionFilesV9() {
 
         function cleanupTempFiles() {
             try {
-                if (
-                    tempDoc &&
-                    tempDoc.name &&
-                    /^_temp_/.test(tempDoc.name)
-                ) {
+                if (tempDoc) {
                     tempDoc.close(SaveOptions.DONOTSAVECHANGES);
+                    tempDoc = null;
                 }
-            } catch (eC1) {}
+            } catch (e1) {}
 
             try {
-                if (tempAiFile && tempAiFile.exists) {
-                    tempAiFile.remove();
-                }
-            } catch (eC2) {}
+                if (tempAiFile && tempAiFile.exists) tempAiFile.remove();
+            } catch (e2) {}
 
             try {
-                if (masterTempFile && masterTempFile.exists) {
-                    masterTempFile.remove();
-                }
-            } catch (eC3) {}
+                if (masterTempFile && masterTempFile.exists) masterTempFile.remove();
+            } catch (e3) {}
         }
 
-        win.close();
-        app.userInteractionLevel = UserInteractionLevel.DONTDISPLAYALERTS;
+        function buildPdfOptions() {
+            var opts = new PDFSaveOptions();
+            opts.pDFPreset = presetName;
+            opts.preserveEditability = true;
+            opts.acrobatLayers = true;
+            opts.compatibility = PDFCompatibility.ACROBAT6;
+            opts.viewAfterSaving = !preventOpening;
+            return opts;
+        }
 
-        try {
+        function buildEpsOptions(targetDoc) {
+            var opts = new EPSSaveOptions();
+            opts.cmykPostScript =
+                targetDoc.documentColorSpace === DocumentColorSpace.CMYK;
+            opts.embedAllFonts = false;
+            opts.preview = EPSPreview.COLORTIFF;
+            opts.compatibility = Compatibility.ILLUSTRATOR10;
+
+            try { opts.postScript = PostScriptLevelEnum.LEVEL3; } catch (e1) {}
+            try { opts.compatibleGradientPrinting = true; } catch (e2) {}
+            try { opts.embedLinkedFiles = true; } catch (e3) {}
+
+            return opts;
+        }
+
+        function getBaseName(index) {
+            var abName = cleanName(doc.artboards[index].name);
+            var prefix = customNameInput !== "" ? customNameInput : cleanDocName + " ";
+            return prefix + abName;
+        }
+
+        function getGroupedBaseName() {
+            var prefix = customNameInput !== "" ? customNameInput : cleanDocName + " ";
+            return prefix + "Grouped";
+        }
+
+        function isolateSingleArtboard(targetDoc, index) {
+            targetDoc.selection = null;
+            targetDoc.artboards.setActiveArtboardIndex(index);
+
+            try {
+                app.executeMenuCommand("selectallinartboard");
+                app.executeMenuCommand("hide");
+                app.executeMenuCommand("selectall");
+                app.executeMenuCommand("clear");
+                app.executeMenuCommand("showAll");
+            } catch (e) {}
+        }
+
+        function keepSelectedArtboards(targetDoc, indices) {
+            /*
+             * Selected artwork is hidden one artboard at a time.
+             * After all selected artboards are hidden, all remaining
+             * visible artwork belongs to unselected artboards and can
+             * be removed. The selected artwork is then shown again.
+             */
+            for (var s = 0; s < indices.length; s++) {
+                targetDoc.selection = null;
+                targetDoc.artboards.setActiveArtboardIndex(indices[s]);
+
+                try {
+                    app.executeMenuCommand("selectallinartboard");
+                    app.executeMenuCommand("hide");
+                } catch (e) {}
+            }
+
+            try {
+                targetDoc.selection = null;
+                app.executeMenuCommand("selectall");
+                app.executeMenuCommand("clear");
+                app.executeMenuCommand("showAll");
+            } catch (e) {}
+        }
+
+        function removeUnselectedArtboards(targetDoc, indices) {
+            var keep = {};
+            for (var k = 0; k < indices.length; k++) keep[indices[k]] = true;
+
+            for (var a = targetDoc.artboards.length - 1; a >= 0; a--) {
+                if (!keep[a]) {
+                    try {
+                        targetDoc.artboards[a].remove();
+                    } catch (e) {}
+                }
+            }
+        }
+
+        function checkBleedForIndices(targetDoc, indices) {
+            for (var b = 0; b < indices.length; b++) {
+                var originalIndex = indices[b];
+
+                try {
+                    var bounds = targetDoc.artboards[originalIndex].artboardRect;
+                    var bleeding = findBleedingItems(targetDoc.pageItems, bounds);
+
+                    if (bleeding.length > 0) {
+                        bleedFailures.push(
+                            cleanName(doc.artboards[originalIndex].name)
+                        );
+                    }
+                } catch (e) {}
+            }
+        }
+
+        function prepareMaster() {
             var originalFile = new File(originalFilePath);
 
             masterTempFile = new File(
@@ -337,26 +506,17 @@ function exportProductionFilesV9() {
             }
 
             var masterDoc = app.open(masterTempFile);
-
             fastUnlock(masterDoc.layers);
 
-            try {
-                app.executeMenuCommand("unlockAll");
-            } catch (e) {}
-
-            try {
-                app.executeMenuCommand("showAll");
-            } catch (e) {}
+            try { app.executeMenuCommand("unlockAll"); } catch (e1) {}
+            try { app.executeMenuCommand("showAll"); } catch (e2) {}
 
             try {
                 var tFrames = masterDoc.textFrames;
-
                 for (var t = tFrames.length - 1; t >= 0; t--) {
-                    try {
-                        tFrames[t].createOutline();
-                    } catch (e) {}
+                    try { tFrames[t].createOutline(); } catch (e3) {}
                 }
-            } catch (e) {}
+            } catch (e4) {}
 
             try {
                 var placed = masterDoc.placedItems;
@@ -365,152 +525,199 @@ function exportProductionFilesV9() {
                     try {
                         placed[pI].embed();
                     } catch (eEmbed) {
-                        try {
-                            linkEmbedFailures.push(placed[pI].name);
-                        } catch (eName) {}
+                        try { linkEmbedFailures.push(placed[pI].name); } catch (eName) {}
                     }
                 }
             } catch (ePlaced) {}
 
             masterDoc.save();
             masterDoc.close(SaveOptions.DONOTSAVECHANGES);
+        }
 
-            for (var i = 0; i < total; i++) {
-                var abName = doc.artboards[i].name;
-                var cleanArtboardName = abName.replace(/[\/\\:*?"<>|]/g, "-");
+        function exportSingle(index) {
+            var baseFileName = getBaseName(index);
 
-                var prefix =
-                    customNameInput !== ""
-                        ? customNameInput
-                        : cleanDocName + " ";
+            tempAiFile = new File(
+                destFolder.fsName + "/_temp_" + index + ".ai"
+            );
 
-                var baseFileName = prefix + cleanArtboardName;
+            if (!masterTempFile.copy(tempAiFile)) {
+                throw new Error(
+                    "Could not create a temporary file for artboard: " +
+                    cleanName(doc.artboards[index].name)
+                );
+            }
 
-                tempAiFile = new File(
-                    destFolder.fsName + "/_temp_" + i + ".ai"
+            tempDoc = app.open(tempAiFile);
+            app.activeDocument = tempDoc;
+
+            isolateSingleArtboard(tempDoc, index);
+
+            try {
+                var bounds = tempDoc.artboards[index].artboardRect;
+                var bleeding = findBleedingItems(tempDoc.pageItems, bounds);
+                if (bleeding.length > 0) {
+                    bleedFailures.push(cleanName(doc.artboards[index].name));
+                }
+            } catch (eBleed) {}
+
+            removeEmptyLayers(tempDoc.layers);
+
+            for (var a = tempDoc.artboards.length - 1; a >= 0; a--) {
+                if (a !== index) {
+                    try { tempDoc.artboards[a].remove(); } catch (e) {}
+                }
+            }
+
+            var pdfTargetFile = new File(
+                destFolder.fsName + "/" + baseFileName + ".pdf"
+            );
+
+            var pdfSaveOpts = buildPdfOptions();
+            pdfSaveOpts.artboardRange = "1";
+            tempDoc.saveAs(pdfTargetFile, pdfSaveOpts);
+
+            if (saveAi) {
+                var aiTargetFile = new File(
+                    destFolder.fsName + "/" + baseFileName + ".ai"
                 );
 
-                if (!masterTempFile.copy(tempAiFile)) {
-                    throw new Error(
-                        "Could not create a temporary file for artboard: " +
-                        cleanArtboardName
-                    );
-                }
+                var aiSaveOpts = new IllustratorSaveOptions();
+                aiSaveOpts.pdfCompatible = true;
+                tempDoc.saveAs(aiTargetFile, aiSaveOpts);
+            }
 
-                tempDoc = app.open(tempAiFile);
-                app.activeDocument = tempDoc;
-
-                tempDoc.selection = null;
-                tempDoc.artboards.setActiveArtboardIndex(i);
-
-                try {
-                    app.executeMenuCommand("selectallinartboard");
-                    app.executeMenuCommand("hide");
-                    app.executeMenuCommand("selectall");
-                    app.executeMenuCommand("clear");
-                    app.executeMenuCommand("showAll");
-                } catch (e) {}
-
-                try {
-                    var abBounds = tempDoc.artboards[i].artboardRect;
-                    var bleeding = findBleedingItems(
-                        tempDoc.pageItems,
-                        abBounds
-                    );
-
-                    if (bleeding.length > 0) {
-                        bleedFailures.push(cleanArtboardName);
-                    }
-                } catch (eBleed) {}
-
-                removeEmptyLayers(tempDoc.layers);
-
-                var abCount = tempDoc.artboards.length;
-
-                for (var a = abCount - 1; a >= 0; a--) {
-                    if (a !== i) {
-                        try {
-                            tempDoc.artboards[a].remove();
-                        } catch (e) {}
-                    }
-                }
-
-                var pdfTargetFile = new File(
-                    destFolder.fsName + "/" + baseFileName + ".pdf"
+            if (saveEps) {
+                var epsTargetFile = new File(
+                    destFolder.fsName + "/" + baseFileName + ".eps"
                 );
 
-                var pdfSaveOpts = new PDFSaveOptions();
-                pdfSaveOpts.pDFPreset = presetName;
-                pdfSaveOpts.preserveEditability = true;
-                pdfSaveOpts.acrobatLayers = true;
-                pdfSaveOpts.compatibility = PDFCompatibility.ACROBAT6;
-                pdfSaveOpts.artboardRange = "1";
-                pdfSaveOpts.viewAfterSaving = !preventOpening;
+                tempDoc.saveAs(epsTargetFile, buildEpsOptions(tempDoc));
+                epsCount++;
+            }
 
-                tempDoc.saveAs(pdfTargetFile, pdfSaveOpts);
+            tempDoc.close(SaveOptions.DONOTSAVECHANGES);
+            tempDoc = null;
 
-                if (saveAi) {
-                    var aiTargetFile = new File(
-                        destFolder.fsName + "/" + baseFileName + ".ai"
-                    );
+            tempAiFile.remove();
+            tempAiFile = null;
 
-                    var aiSaveOpts = new IllustratorSaveOptions();
-                    aiSaveOpts.pdfCompatible = true;
+            $.gc();
+            app.activeDocument = doc;
+            exportedCount++;
+        }
 
-                    tempDoc.saveAs(aiTargetFile, aiSaveOpts);
-                }
+        function exportGrouped() {
+            var groupedBaseName = getGroupedBaseName();
 
+            tempAiFile = new File(destFolder.fsName + "/_temp_grouped.ai");
+
+            if (!masterTempFile.copy(tempAiFile)) {
+                throw new Error("Could not create the temporary grouped file.");
+            }
+
+            tempDoc = app.open(tempAiFile);
+            app.activeDocument = tempDoc;
+
+            keepSelectedArtboards(tempDoc, selectedIndices);
+            checkBleedForIndices(tempDoc, selectedIndices);
+            removeEmptyLayers(tempDoc.layers);
+            removeUnselectedArtboards(tempDoc, selectedIndices);
+
+            var pdfTargetFile = new File(
+                destFolder.fsName + "/" + groupedBaseName + ".pdf"
+            );
+
+            var pdfSaveOpts = buildPdfOptions();
+
+            var ranges = [];
+            for (var r = 1; r <= tempDoc.artboards.length; r++) {
+                ranges.push(String(r));
+            }
+            pdfSaveOpts.artboardRange = ranges.join(",");
+
+            tempDoc.saveAs(pdfTargetFile, pdfSaveOpts);
+
+            if (saveAi) {
+                var aiTargetFile = new File(
+                    destFolder.fsName + "/" + groupedBaseName + ".ai"
+                );
+
+                var aiSaveOpts = new IllustratorSaveOptions();
+                aiSaveOpts.pdfCompatible = true;
+                tempDoc.saveAs(aiTargetFile, aiSaveOpts);
+            }
+
+            tempDoc.close(SaveOptions.DONOTSAVECHANGES);
+            tempDoc = null;
+
+            tempAiFile.remove();
+            tempAiFile = null;
+
+            $.gc();
+            app.activeDocument = doc;
+
+            exportedCount = selectedIndices.length;
+        }
+
+        win.close();
+        app.userInteractionLevel = UserInteractionLevel.DONTDISPLAYALERTS;
+
+        try {
+            prepareMaster();
+
+            if (groupSelected) {
+                exportGrouped();
+
+                /*
+                 * EPS is kept as one artboard per file because EPS does not
+                 * provide the same multi-artboard output model as PDF/AI.
+                 */
                 if (saveEps) {
-                    var epsTargetFile = new File(
-                        destFolder.fsName + "/" + baseFileName + ".eps"
-                    );
+                    for (var e = 0; e < selectedIndices.length; e++) {
+                        exportSingle(selectedIndices[e]);
+                    }
 
-                    var epsSaveOpts = new EPSSaveOptions();
-                    epsSaveOpts.cmykPostScript =
-                        tempDoc.documentColorSpace === DocumentColorSpace.CMYK;
-                    epsSaveOpts.embedAllFonts = false;
-                    epsSaveOpts.preview = EPSPreview.COLORTIFF;
-                    epsSaveOpts.compatibility = Compatibility.ILLUSTRATOR10;
-
-                    try {
-                        epsSaveOpts.postScript = PostScriptLevelEnum.LEVEL3;
-                    } catch (ePS) {}
-
-                    try {
-                        epsSaveOpts.compatibleGradientPrinting = true;
-                    } catch (eGP) {}
-
-                    try {
-                        epsSaveOpts.embedLinkedFiles = true;
-                    } catch (eEL) {}
-
-                    tempDoc.saveAs(epsTargetFile, epsSaveOpts);
+                    exportedCount = selectedIndices.length;
                 }
-
-                tempDoc.close(SaveOptions.DONOTSAVECHANGES);
-                tempDoc = null;
-
-                tempAiFile.remove();
-                tempAiFile = null;
-
-                $.gc();
-
-                app.activeDocument = doc;
-                exportedCount++;
+            } else {
+                for (var n = 0; n < selectedIndices.length; n++) {
+                    exportSingle(selectedIndices[n]);
+                }
             }
 
             if (masterTempFile && masterTempFile.exists) {
                 masterTempFile.remove();
             }
-
             masterTempFile = null;
+
             app.userInteractionLevel = prevInteractionLevel;
             app.activeDocument = doc;
 
-            var doneMsg =
-                "SUCCESS: Done!\n" +
-                exportedCount +
-                " artboards exported.";
+            var doneMsg;
+
+            if (groupSelected) {
+                doneMsg =
+                    "SUCCESS: Done!\n" +
+                    selectedIndices.length +
+                    " selected artboards exported as one grouped PDF" +
+                    (saveAi ? " and AI" : "") +
+                    ".";
+
+                if (saveEps) {
+                    doneMsg +=
+                        "\nEPS files were exported individually because EPS does not support multiple artboards in one file.";
+                }
+            } else {
+                doneMsg =
+                    "SUCCESS: Done!\n" +
+                    selectedIndices.length +
+                    " selected artboards exported.";
+            }
+
+            if (saveEps && !groupSelected) {
+                doneMsg += "\n" + epsCount + " EPS file(s) created.";
+            }
 
             if (layerCleanupFailures.length > 0) {
                 doneMsg +=
@@ -524,7 +731,7 @@ function exportProductionFilesV9() {
                 doneMsg +=
                     "\n\nNote: " +
                     linkEmbedFailures.length +
-                    " linked file(s) could not be embedded (likely still linked in the export):\n" +
+                    " linked file(s) could not be embedded:\n" +
                     linkEmbedFailures.join(", ");
             }
 
@@ -534,16 +741,13 @@ function exportProductionFilesV9() {
                     bleedFailures.join("\n");
             }
 
-           alert(doneMsg.replace("SUCCESS: ", ""));
-			RESULT = doneMsg;
+            RESULT = doneMsg;
 
         } catch (error) {
             app.userInteractionLevel = prevInteractionLevel;
             cleanupTempFiles();
 
-            try {
-                app.activeDocument = doc;
-            } catch (eActiveDoc) {}
+            try { app.activeDocument = doc; } catch (eActiveDoc) {}
 
             RESULT =
                 "ERROR: " +
@@ -552,7 +756,7 @@ function exportProductionFilesV9() {
                 exportedCount +
                 " of " +
                 total +
-                " artboards." +
+                " selected artboards." +
                 "\nTemporary files were cleaned up.";
         }
     };
@@ -561,7 +765,7 @@ function exportProductionFilesV9() {
 }
 
 try {
-    exportProductionFilesV9();
+    main();
 } catch (e) {
     if (RESULT === "") {
         RESULT = "ERROR: Unexpected error:\n" + e.message;
