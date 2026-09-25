@@ -21,7 +21,7 @@ function main() {
     }
 
     var docName = doc.name.replace(/\.[^\.]+$/, "");
-    var cleanDocName = docName.replace(/[\\/:*?"<>|]/g, "-");
+    var cleanDocName = docName.replace(/[/\\:*?"<>|]/g, "-");
     var pdfPresets = app.PDFPresetsList;
 
     if (!pdfPresets || pdfPresets.length === 0) {
@@ -161,11 +161,42 @@ function main() {
     );
     chkDisableView.value = false;
 
+    pnlSettings.add("statictext", undefined, "6. Folder Organization:");
+    var FOLDER_MODE_OPTIONS = [
+        "No subfolders",
+        "One folder per artboard",
+        "One folder per file type"
+    ];
+    var dropdownFolderMode = pnlSettings.add(
+        "dropdownlist",
+        undefined,
+        FOLDER_MODE_OPTIONS
+    );
+    dropdownFolderMode.selection = 0;
+    dropdownFolderMode.preferredSize.width = 300;
+
+    pnlSettings.add(
+        "statictext",
+        undefined,
+        "7. Bleed (inches) - art inside this won't trigger the edge warning:"
+    );
+    var grpBleed = pnlSettings.add("group");
+    var txtBleed = grpBleed.add("edittext", undefined, "0");
+    txtBleed.characters = 8;
+
+    try {
+        var detectedBleed = doc.documentBleedOffset;
+        if (detectedBleed && detectedBleed.top > 0) {
+            txtBleed.text =
+                String(Math.round((detectedBleed.top / 72) * 1000) / 1000);
+        }
+    } catch (eBleedDetect) {}
+
     var txtPreview = pnlSettings.add("statictext", undefined, "");
     txtPreview.preferredSize.width = 400;
 
     function cleanName(name) {
-        return name.replace(/[\\/:*?"<>|]/g, "-");
+        return name.replace(/[/\\:*?"<>|]/g, "-");
     }
 
     function getPrefix() {
@@ -246,11 +277,18 @@ function main() {
             app.preferences.setStringPreference("TheSignPack_LastPDFPreset", presetName);
         } catch (e) {}
 
-        var customNameInput = txtCustomName.text;
+        var customNameInput = txtCustomName.text.replace(/[/\\:*?"<>|]/g, "-");
         var groupSelected = chkGroup.value;
         var saveAi = chkSaveAi.value;
         var saveEps = chkSaveEps.value;
         var preventOpening = chkDisableView.value;
+        var folderMode = dropdownFolderMode.selection
+            ? dropdownFolderMode.selection.index
+            : 0;
+
+        var bleedInches = parseFloat(txtBleed.text);
+        if (isNaN(bleedInches) || bleedInches < 0) bleedInches = 0;
+        var bleedPts = bleedInches * 72;
 
         var total = selectedIndices.length;
         var exportedCount = 0;
@@ -395,24 +433,60 @@ function main() {
             opts.pDFPreset = presetName;
             opts.preserveEditability = true;
             opts.acrobatLayers = true;
-            opts.compatibility = PDFCompatibility.ACROBAT6;
+            opts.compatibility = PDFCompatibility.ACROBAT7;
             opts.viewAfterSaving = !preventOpening;
             return opts;
         }
 
-        function buildEpsOptions(targetDoc) {
+        function buildEpsOptions(targetDoc, useArtboards, artboardRange) {
             var opts = new EPSSaveOptions();
+
             opts.cmykPostScript =
                 targetDoc.documentColorSpace === DocumentColorSpace.CMYK;
             opts.embedAllFonts = false;
             opts.preview = EPSPreview.COLORTIFF;
-            opts.compatibility = Compatibility.ILLUSTRATOR10;
+
+            // Do not hardcode EPS compatibility. Illustrator's modern
+            // default is required for Large Canvas documents.
+            if (useArtboards) {
+                opts.saveMultipleArtboards = true;
+                opts.artboardRange = artboardRange || "";
+            }
 
             try { opts.postScript = PostScriptLevelEnum.LEVEL3; } catch (e1) {}
             try { opts.compatibleGradientPrinting = true; } catch (e2) {}
             try { opts.embedLinkedFiles = true; } catch (e3) {}
 
             return opts;
+        }
+
+        function getOrCreateFolder(parentFolder, name) {
+            var folder = new Folder(parentFolder.fsName + "/" + name);
+            if (!folder.exists && !folder.create()) {
+                throw new Error("Could not create folder: " + folder.fsName);
+            }
+            return folder;
+        }
+
+        function getDestinationFolders(baseName) {
+            var artboardDestFolder = destFolder;
+
+            if (folderMode === 1) {
+                artboardDestFolder = getOrCreateFolder(destFolder, baseName);
+            }
+
+            return {
+                artboard: artboardDestFolder,
+                pdf: folderMode === 2
+                    ? getOrCreateFolder(destFolder, "PDF")
+                    : artboardDestFolder,
+                ai: folderMode === 2
+                    ? getOrCreateFolder(destFolder, "AI")
+                    : artboardDestFolder,
+                eps: folderMode === 2
+                    ? getOrCreateFolder(destFolder, "EPS")
+                    : artboardDestFolder
+            };
         }
 
         function getBaseName(index) {
@@ -535,7 +609,9 @@ function main() {
         }
 
         function exportSingle(index) {
+            var cleanArtboardName = cleanName(doc.artboards[index].name);
             var baseFileName = getBaseName(index);
+            var folders = getDestinationFolders(cleanArtboardName);
 
             tempAiFile = new File(
                 destFolder.fsName + "/_temp_" + index + ".ai"
@@ -544,7 +620,7 @@ function main() {
             if (!masterTempFile.copy(tempAiFile)) {
                 throw new Error(
                     "Could not create a temporary file for artboard: " +
-                    cleanName(doc.artboards[index].name)
+                    cleanArtboardName
                 );
             }
 
@@ -554,10 +630,16 @@ function main() {
             isolateSingleArtboard(tempDoc, index);
 
             try {
-                var bounds = tempDoc.artboards[index].artboardRect;
-                var bleeding = findBleedingItems(tempDoc.pageItems, bounds);
+                var rawBounds = tempDoc.artboards[index].artboardRect;
+                var abBounds = [
+                    rawBounds[0] - bleedPts,
+                    rawBounds[1] + bleedPts,
+                    rawBounds[2] + bleedPts,
+                    rawBounds[3] - bleedPts
+                ];
+                var bleeding = findBleedingItems(tempDoc.pageItems, abBounds);
                 if (bleeding.length > 0) {
-                    bleedFailures.push(cleanName(doc.artboards[index].name));
+                    bleedFailures.push(cleanArtboardName);
                 }
             } catch (eBleed) {}
 
@@ -570,7 +652,7 @@ function main() {
             }
 
             var pdfTargetFile = new File(
-                destFolder.fsName + "/" + baseFileName + ".pdf"
+                folders.pdf.fsName + "/" + baseFileName + ".pdf"
             );
 
             var pdfSaveOpts = buildPdfOptions();
@@ -579,7 +661,7 @@ function main() {
 
             if (saveAi) {
                 var aiTargetFile = new File(
-                    destFolder.fsName + "/" + baseFileName + ".ai"
+                    folders.ai.fsName + "/" + baseFileName + ".ai"
                 );
 
                 var aiSaveOpts = new IllustratorSaveOptions();
@@ -589,10 +671,13 @@ function main() {
 
             if (saveEps) {
                 var epsTargetFile = new File(
-                    destFolder.fsName + "/" + baseFileName + ".eps"
+                    folders.eps.fsName + "/" + baseFileName + ".eps"
                 );
 
-                tempDoc.saveAs(epsTargetFile, buildEpsOptions(tempDoc));
+                tempDoc.saveAs(
+                    epsTargetFile,
+                    buildEpsOptions(tempDoc, false, "1")
+                );
                 epsCount++;
             }
 
@@ -609,6 +694,15 @@ function main() {
 
         function exportGrouped() {
             var groupedBaseName = getGroupedBaseName();
+            var folders = getDestinationFolders("Grouped");
+
+            // In grouped mode there is one output file per format, so
+            // "One folder per artboard" falls back to the main destination.
+            if (folderMode === 1) {
+                folders.pdf = destFolder;
+                folders.ai = destFolder;
+                folders.eps = destFolder;
+            }
 
             tempAiFile = new File(destFolder.fsName + "/_temp_grouped.ai");
 
@@ -620,32 +714,70 @@ function main() {
             app.activeDocument = tempDoc;
 
             keepSelectedArtboards(tempDoc, selectedIndices);
-            checkBleedForIndices(tempDoc, selectedIndices);
+
+            // Check each selected artboard against its bleed-expanded bounds
+            // before deleting the unselected artwork/artboards.
+            for (var bi = 0; bi < selectedIndices.length; bi++) {
+                var originalIndex = selectedIndices[bi];
+                try {
+                    var rawBounds = tempDoc.artboards[originalIndex].artboardRect;
+                    var abBounds = [
+                        rawBounds[0] - bleedPts,
+                        rawBounds[1] + bleedPts,
+                        rawBounds[2] + bleedPts,
+                        rawBounds[3] - bleedPts
+                    ];
+                    var bleeding = findBleedingItems(tempDoc.pageItems, abBounds);
+                    if (bleeding.length > 0) {
+                        bleedFailures.push(cleanName(doc.artboards[originalIndex].name));
+                    }
+                } catch (eBleed) {}
+            }
+
             removeEmptyLayers(tempDoc.layers);
             removeUnselectedArtboards(tempDoc, selectedIndices);
 
             var pdfTargetFile = new File(
-                destFolder.fsName + "/" + groupedBaseName + ".pdf"
+                folders.pdf.fsName + "/" + groupedBaseName + ".pdf"
             );
-
-            var pdfSaveOpts = buildPdfOptions();
 
             var ranges = [];
             for (var r = 1; r <= tempDoc.artboards.length; r++) {
                 ranges.push(String(r));
             }
-            pdfSaveOpts.artboardRange = ranges.join(",");
 
+            var pdfSaveOpts = buildPdfOptions();
+            pdfSaveOpts.artboardRange = ranges.join(",");
             tempDoc.saveAs(pdfTargetFile, pdfSaveOpts);
 
             if (saveAi) {
                 var aiTargetFile = new File(
-                    destFolder.fsName + "/" + groupedBaseName + ".ai"
+                    folders.ai.fsName + "/" + groupedBaseName + ".ai"
                 );
 
                 var aiSaveOpts = new IllustratorSaveOptions();
                 aiSaveOpts.pdfCompatible = true;
                 tempDoc.saveAs(aiTargetFile, aiSaveOpts);
+            }
+
+            if (saveEps) {
+                var epsTargetFile = new File(
+                    folders.eps.fsName + "/" + groupedBaseName + ".eps"
+                );
+
+                var epsSaveOpts = buildEpsOptions(
+                    tempDoc,
+                    true,
+                    ranges.join(",")
+                );
+
+                // This is the scripted equivalent of checking
+                // "Use Artboards" in File > Save As > EPS.
+                epsSaveOpts.saveMultipleArtboards = true;
+                epsSaveOpts.artboardRange = ranges.join(",");
+
+                tempDoc.saveAs(epsTargetFile, epsSaveOpts);
+                epsCount++;
             }
 
             tempDoc.close(SaveOptions.DONOTSAVECHANGES);
@@ -668,18 +800,6 @@ function main() {
 
             if (groupSelected) {
                 exportGrouped();
-
-                /*
-                 * EPS is kept as one artboard per file because EPS does not
-                 * provide the same multi-artboard output model as PDF/AI.
-                 */
-                if (saveEps) {
-                    for (var e = 0; e < selectedIndices.length; e++) {
-                        exportSingle(selectedIndices[e]);
-                    }
-
-                    exportedCount = selectedIndices.length;
-                }
             } else {
                 for (var n = 0; n < selectedIndices.length; n++) {
                     exportSingle(selectedIndices[n]);
@@ -700,14 +820,9 @@ function main() {
                 doneMsg =
                     "SUCCESS: Done!\n" +
                     selectedIndices.length +
-                    " selected artboards exported as one grouped PDF" +
-                    (saveAi ? " and AI" : "") +
+                    " selected artboards exported as grouped file(s)" +
+                    (saveEps ? " including multi-artboard EPS" : "") +
                     ".";
-
-                if (saveEps) {
-                    doneMsg +=
-                        "\nEPS files were exported individually because EPS does not support multiple artboards in one file.";
-                }
             } else {
                 doneMsg =
                     "SUCCESS: Done!\n" +
