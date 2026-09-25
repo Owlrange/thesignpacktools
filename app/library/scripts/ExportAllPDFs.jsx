@@ -696,14 +696,8 @@ function main() {
             var groupedBaseName = getGroupedBaseName();
             var folders = getDestinationFolders("Grouped");
 
-            // In grouped mode there is one output file per format, so
-            // "One folder per artboard" falls back to the main destination.
-            if (folderMode === 1) {
-                folders.pdf = destFolder;
-                folders.ai = destFolder;
-                folders.eps = destFolder;
-            }
-
+            // In grouped mode there is one output file per format.
+            // "One folder per artboard" uses a single "Grouped" folder.
             tempAiFile = new File(destFolder.fsName + "/_temp_grouped.ai");
 
             if (!masterTempFile.copy(tempAiFile)) {
@@ -765,16 +759,12 @@ function main() {
                     folders.eps.fsName + "/" + groupedBaseName + ".eps"
                 );
 
+                // Use Artboards is handled by EPSSaveOptions.
                 var epsSaveOpts = buildEpsOptions(
                     tempDoc,
                     true,
                     ranges.join(",")
                 );
-
-                // This is the scripted equivalent of checking
-                // "Use Artboards" in File > Save As > EPS.
-                epsSaveOpts.saveMultipleArtboards = true;
-                epsSaveOpts.artboardRange = ranges.join(",");
 
                 tempDoc.saveAs(epsTargetFile, epsSaveOpts);
                 epsCount++;
