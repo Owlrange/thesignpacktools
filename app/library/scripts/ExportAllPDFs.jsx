@@ -21,7 +21,7 @@ function main() {
     }
 
     var docName = doc.name.replace(/\.[^\.]+$/, "");
-    var cleanDocName = docName.replace(/[/\\:*?"<>|]/g, "-");
+    var cleanDocName = docName.replace(/[\/:*?"<>|]/g, "-");
     var pdfPresets = app.PDFPresetsList;
 
     if (!pdfPresets || pdfPresets.length === 0) {
@@ -196,7 +196,7 @@ function main() {
     txtPreview.preferredSize.width = 400;
 
     function cleanName(name) {
-        return name.replace(/[/\\:*?"<>|]/g, "-");
+        return name.replace(/[\/:*?"<>|]/g, "-");
     }
 
     function getPrefix() {
@@ -277,7 +277,7 @@ function main() {
             app.preferences.setStringPreference("TheSignPack_LastPDFPreset", presetName);
         } catch (e) {}
 
-        var customNameInput = txtCustomName.text.replace(/[/\\:*?"<>|]/g, "-");
+        var customNameInput = txtCustomName.text.replace(/[\/:*?"<>|]/g, "-");
         var groupSelected = chkGroup.value;
         var saveAi = chkSaveAi.value;
         var saveEps = chkSaveEps.value;
