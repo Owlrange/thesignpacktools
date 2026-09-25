@@ -759,11 +759,13 @@ function main() {
                     folders.eps.fsName + "/" + groupedBaseName + ".eps"
                 );
 
-                // Use Artboards is handled by EPSSaveOptions.
+                // The grouped temporary document already contains only
+                // the selected artboards. Save it as one EPS without
+                // Use Artboards, so Illustrator does not split the output.
                 var epsSaveOpts = buildEpsOptions(
                     tempDoc,
-                    true,
-                    ranges.join(",")
+                    false,
+                    ""
                 );
 
                 tempDoc.saveAs(epsTargetFile, epsSaveOpts);
