@@ -1,3 +1,5 @@
+var RESULT = "";
+
 #target illustrator
 
 // ============================================================
@@ -137,9 +139,9 @@
 //  exported PDF against the source file before trusting a batch.
 // ============================================================
 
-function exportProductionFilesV2() {
+function main() {
     if (app.documents.length === 0) {
-        alert("Please open a document first.");
+        RESULT = "ERROR: Please open a document first.";
         return;
     }
 
@@ -150,7 +152,7 @@ function exportProductionFilesV2() {
         if (!doc.saved) doc.save();
         originalFilePath = doc.fullName.fsName;
     } catch (e) {
-        alert("Please save your original .ai file first.");
+        RESULT = "ERROR: Please save your original .ai file first.";
         return;
     }
 
@@ -408,14 +410,14 @@ function exportProductionFilesV2() {
     var btnExport = grpButtons.add("button", undefined, "Export Files");
     var btnCancel = grpButtons.add("button", undefined, "Cancel");
 
-    btnCancel.onClick = function () { win.close(); };
+    btnCancel.onClick = function () { RESULT = "WARNING: Operation cancelled."; win.close(); };
 
     btnExport.onClick = function () {
-        if (txtFolder.text === "") { alert("Select an output folder."); return; }
+        if (txtFolder.text === "") { RESULT = "ERROR: Select an output folder."; win.close(); return; }
         var destFolder = new Folder(txtFolder.text);
-        if (!destFolder.exists) { alert("Folder does not exist."); return; }
+        if (!destFolder.exists) { RESULT = "ERROR: Folder does not exist."; win.close(); return; }
 
-        if (!dropdownPresets.selection) { alert("No PDF preset selected (or none installed)."); return; }
+        if (!dropdownPresets.selection) { RESULT = "ERROR: No PDF preset selected (or none installed)."; win.close(); return; }
         var presetName = dropdownPresets.selection.text;
 
         // ----- bleed -----
@@ -428,7 +430,8 @@ function exportProductionFilesV2() {
             bleedMode = "custom";
             bleedInches = parseFloat(txtBleed.text);
             if (isNaN(bleedInches) || bleedInches < 0) {
-                alert("Enter a valid custom bleed in inches (for example 0.25).");
+                RESULT = "ERROR: Enter a valid custom bleed in inches (for example 0.25).";
+                win.close();
                 return;
             }
         }
@@ -440,7 +443,8 @@ function exportProductionFilesV2() {
         if (chkPdfBleed.value) {
             pdfBleedInches = parseFloat(txtPdfBleed.text);
             if (isNaN(pdfBleedInches) || pdfBleedInches < 0) {
-                alert("Enter a valid PDF bleed in inches (for example 0.125).");
+                RESULT = "ERROR: Enter a valid PDF bleed in inches (for example 0.125).";
+                win.close();
                 return;
             }
         }
@@ -452,7 +456,8 @@ function exportProductionFilesV2() {
         if (rbAbSel.value) {
             var abSel = listAb.selection;
             if (!abSel) {
-                alert("Select at least one artboard in the list, or choose \"All artboards\".");
+                RESULT = "ERROR: Select at least one artboard in the list, or choose \"All artboards\".";
+                win.close();
                 return;
             }
             var abSelArr = (abSel instanceof Array) ? abSel : [abSel];
@@ -1170,17 +1175,25 @@ function exportProductionFilesV2() {
             if (openFolderWhenDone) {
                 try { destFolder.execute(); } catch (eOpen) {}
             }
-            alert(doneMsg);
+            RESULT = cancelRequested ? "WARNING: " + doneMsg : "SUCCESS: " + doneMsg;
         } catch (error) {
             app.userInteractionLevel = prevInteractionLevel;
             cleanupTempFiles();
             try { progWin.close(); } catch (ePc2) {}
-            alert("Error:\n" + error.message +
-                  "\n\nExported before the error: " + exportedCount + " of " + total + " artboards." +
-                  "\nTemporary files were cleaned up.");
+            RESULT = "ERROR: " + error.message +
+                      "\n\nExported before the error: " + exportedCount + " of " + total + " artboards." +
+                      "\nTemporary files were cleaned up.";
         }
     };
     win.show();
 }
 
-exportProductionFilesV2();
+try {
+    main();
+} catch (e) {
+    if (RESULT === "") {
+        RESULT = "ERROR: Unexpected error:\n" + e.message;
+    }
+}
+
+RESULT;
