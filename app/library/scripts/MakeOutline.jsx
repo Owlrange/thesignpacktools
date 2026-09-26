@@ -96,7 +96,7 @@ function askDeleteOriginal(){
 
 
     var result =
-        "keep";
+        "cancel";
 
 
     keepBtn.onClick =
@@ -318,10 +318,6 @@ function main(){
         [];
 
 
-    var userChoice =
-        askDeleteOriginal();
-
-
     var sel =
         doc.selection;
 
@@ -334,6 +330,22 @@ function main(){
             "ERROR: No objects are selected.";
 
         throw new Error();
+
+    }
+
+
+    var userChoice =
+        askDeleteOriginal();
+
+
+    if(
+        userChoice === "cancel"
+    ){
+
+        RESULT =
+            "WARNING: Operation cancelled.";
+
+        return;
 
     }
 
