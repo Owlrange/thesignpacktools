@@ -1,8 +1,8 @@
 #target illustrator
 
 var RESULT = "";
-var doc = app.activeDocument;
-var artboards = doc.artboards;
+var doc = null;
+var artboards = null;
 var black = null;
 var outlineLayer = null;
 
@@ -51,7 +51,7 @@ function getOutlineLayer(doc) {
         var layer = doc.layers.add();
 
         layer.name = "Outline";
-        layer.printable = false;
+        layer.printable = true;
         layer.color = criarCorlayer();
 
         return layer;
@@ -101,7 +101,7 @@ function askArtboards(doc) {
     w.add(
         "statictext",
         undefined,
-        "Selecione as artboards:"
+        "Select artboards:"
     );
 	
 	//====================================
@@ -307,7 +307,7 @@ function askArtboards(doc) {
         if (!selection) {
 
             alert(
-                "Selecione pelo menos uma artboard."
+                "Please select at least one artboard."
             );
 
             return;
@@ -362,6 +362,31 @@ function askArtboards(doc) {
 //====================================
 function main() {
 
+    if (app.documents.length === 0) {
+
+        RESULT =
+            "ERROR: No document is open.";
+
+        throw new Error();
+
+    }
+
+    doc = app.activeDocument;
+    artboards = doc.artboards;
+
+    var selectedArtboards =
+        askArtboards(doc);
+
+    // Cancelled before any document modification
+    if (selectedArtboards === null) {
+
+        RESULT =
+            "WARNING: Operation cancelled.";
+
+        return;
+
+    }
+
     outlineLayer =
         getOutlineLayer(doc);
 
@@ -370,26 +395,6 @@ function main() {
 
     var stroke =
         getStroke1pt(doc);
-
-
-    //====================================
-    // Escolhe as Artboards
-    //====================================
-
-    var selectedArtboards =
-        askArtboards(doc);
-
-
-    // Cancelou
-    if (selectedArtboards === null) {
-
-        RESULT =
-            "WARNING: Operação cancelada.";
-
-        return;
-
-    }
-
 
     //====================================
     // Cria Outline
@@ -439,7 +444,7 @@ try {
     if (RESULT === "") {
 
         RESULT =
-            "SUCCESS: Contornos criado com sucesso.";
+            "SUCCESS: Artboard contours created successfully.";
 
     }
 
@@ -448,7 +453,7 @@ catch(e) {
 
 
         RESULT =
-            "Erro inesperado:\n" +
+            "ERROR: Unexpected error:\n" +
             e.message;
 
 
