@@ -358,14 +358,17 @@ function main(){
         var item;
 
 
-        // Convert text to outlines
+        // Convert a duplicate of text to outlines
         if(
             originalItem.typename ===
             "TextFrame"
         ){
 
             item =
-                originalItem.createOutline();
+                originalItem.duplicate();
+
+            item =
+                item.createOutline();
 
         }
         else{
