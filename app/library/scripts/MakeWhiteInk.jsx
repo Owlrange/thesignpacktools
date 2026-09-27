@@ -92,89 +92,6 @@ function getWhiteInkColor(doc){
 
 
 // ==========================================
-// ASK WHETHER TO DELETE ORIGINAL
-// ==========================================
-
-function askDeleteOriginal(){
-
-    var w =
-        new Window(
-            "dialog",
-            "White Ink - Original Object"
-        );
-
-    w.orientation =
-        "column";
-
-    w.alignChildren =
-        "fill";
-
-
-    w.add(
-        "statictext",
-        undefined,
-        "Do you want to keep the original object?"
-    );
-
-
-    var btnGroup =
-        w.add("group");
-
-    btnGroup.alignment =
-        "center";
-
-
-    var keepBtn =
-        btnGroup.add(
-            "button",
-            undefined,
-            "Keep Original"
-        );
-
-
-    var deleteBtn =
-        btnGroup.add(
-            "button",
-            undefined,
-            "Remove Original"
-        );
-
-
-    var result =
-        "cancel";
-
-
-    keepBtn.onClick =
-        function(){
-
-            result =
-                "keep";
-
-            w.close();
-
-        };
-
-
-    deleteBtn.onClick =
-        function(){
-
-            result =
-                "delete";
-
-            w.close();
-
-        };
-
-
-    w.show();
-
-
-    return result;
-
-}
-
-
-// ==========================================
 // APPLY FILL RECURSIVELY
 // ==========================================
 
@@ -294,26 +211,6 @@ function main(){
 
 
     // ======================================
-    // ASK WHETHER TO DELETE ORIGINAL
-    // ======================================
-
-    var userChoice =
-        askDeleteOriginal();
-
-
-    if(
-        userChoice === "cancel"
-    ){
-
-        RESULT =
-            "WARNING: Operation cancelled.";
-
-        return;
-
-    }
-
-
-    // ======================================
     // ENSURE WHITE INK LAYER
     // ======================================
 
@@ -391,18 +288,6 @@ function main(){
         [];
 
 
-    // ======================================
-    // PROCESS SELECTED OBJECTS
-    // ======================================
-
-    var itemsToGroup =
-        [];
-
-
-    var userChoice =
-        askDeleteOriginal();
-
-
     for(
         var i = 0;
         i < sel.length;
@@ -453,21 +338,14 @@ function main(){
 
 
         // Remove the original object
-        // only if requested by the user
+        // White Ink always replaces the original
 
-        if(
-            userChoice ===
-            "delete"
-        ){
+        try{
 
-            try{
-
-                originalItem.remove();
-
-            }
-            catch(e){}
+            originalItem.remove();
 
         }
+        catch(e){}
 
     }
 
