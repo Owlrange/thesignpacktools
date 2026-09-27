@@ -354,14 +354,18 @@ function main(){
         var item;
 
 
-        // Convert text to outline
+        // Convert a duplicate of text to outline
+        // Keep the original TextFrame available for Keep/Remove handling
         if(
             originalItem.typename ===
             "TextFrame"
         ){
 
             item =
-                originalItem.createOutline();
+                originalItem.duplicate();
+
+            item =
+                item.createOutline();
 
         }
         else{
