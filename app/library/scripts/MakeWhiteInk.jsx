@@ -5,10 +5,6 @@ var doc = null;
 var whiteInkColor = null;
 
 
-app.userInteractionLevel =
-    UserInteractionLevel.DISPLAYALERTS;
-
-
 // ==========================================
 // CREATE LAYER COLOR
 // ==========================================
@@ -145,7 +141,7 @@ function askDeleteOriginal(){
 
 
     var result =
-        "keep";
+        "cancel";
 
 
     keepBtn.onClick =
@@ -277,8 +273,44 @@ function main(){
         app.activeDocument;
 
 
-    app.userInteractionLevel =
-        UserInteractionLevel.DISPLAYALERTS;
+        // ======================================
+    // VALIDATE SELECTION BEFORE MODIFICATION
+    // ======================================
+
+    var sel =
+        doc.selection;
+
+
+    if(
+        sel.length === 0
+    ){
+
+        RESULT =
+            "ERROR: No objects are selected.";
+
+        throw new Error();
+
+    }
+
+
+    // ======================================
+    // ASK WHETHER TO DELETE ORIGINAL
+    // ======================================
+
+    var userChoice =
+        askDeleteOriginal();
+
+
+    if(
+        userChoice === "cancel"
+    ){
+
+        RESULT =
+            "WARNING: Operation cancelled.";
+
+        return;
+
+    }
 
 
     // ======================================
@@ -286,7 +318,6 @@ function main(){
     // ======================================
 
     var WhiteInkLayer;
-
 
     try{
 
@@ -353,23 +384,11 @@ function main(){
 
 
     // ======================================
-    // VALIDATE SELECTION
+    // PROCESS SELECTED OBJECTS
     // ======================================
 
-    var sel =
-        doc.selection;
-
-
-    if(
-        sel.length === 0
-    ){
-
-        RESULT =
-            "ERROR: No objects are selected.";
-
-        throw new Error();
-
-    }
+    var itemsToGroup =
+        [];
 
 
     // ======================================
@@ -404,7 +423,10 @@ function main(){
         ){
 
             item =
-                originalItem.createOutline();
+                originalItem.duplicate();
+
+            item =
+                item.createOutline();
 
         }
         else{
@@ -504,8 +526,14 @@ try{
 
     main();
 
-    RESULT =
-        "SUCCESS: White Ink created successfully.";
+    if(
+        RESULT === ""
+    ){
+
+        RESULT =
+            "SUCCESS: White Ink created successfully.";
+
+    }
 
 }
 catch(e){
