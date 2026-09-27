@@ -337,22 +337,6 @@ function main(){
         [];
 
 
-    var userChoice =
-        askDeleteOriginal();
-
-
-    if(
-        userChoice === "cancel"
-    ){
-
-        RESULT =
-            "WARNING: Operation cancelled.";
-
-        return;
-
-    }
-
-
     // ==========================================
     // PROCESS SELECTION
     // ==========================================
