@@ -148,7 +148,7 @@ function askDeleteOriginal(){
 
 
     var result =
-        "keep";
+        "cancel";
 
 
     keepBtn.onClick =
@@ -216,6 +216,26 @@ function main(){
     doc =
         app.activeDocument;
 
+
+
+    // ==========================================
+    // VALIDATE SELECTION
+    // ==========================================
+
+    var sel =
+        doc.selection;
+
+
+    if(
+        sel.length === 0
+    ){
+
+        RESULT =
+            "ERROR: No objects are selected.";
+
+        throw new Error();
+
+    }
 
 
     // ==========================================
@@ -290,21 +310,25 @@ function main(){
 
 
     // ==========================================
-    // VALIDATE SELECTION
+    // STORE PROCESSED ITEMS
     // ==========================================
 
-    var sel =
-        doc.selection;
+    var itemsToGroup =
+        [];
+
+
+    var userChoice =
+        askDeleteOriginal();
 
 
     if(
-        sel.length === 0
+        userChoice === "cancel"
     ){
 
         RESULT =
-            "ERROR: No objects are selected.";
+            "WARNING: Operation cancelled.";
 
-        throw new Error();
+        return;
 
     }
 
