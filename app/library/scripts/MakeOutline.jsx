@@ -5,10 +5,6 @@ var doc = null;
 var black = null;
 
 
-app.userInteractionLevel =
-    UserInteractionLevel.DISPLAYALERTS;
-
-
 // ==========================================
 // CREATE LAYER COLOR
 // ==========================================
@@ -239,8 +235,24 @@ function main(){
         app.activeDocument;
 
 
-    app.userInteractionLevel =
-        UserInteractionLevel.DISPLAYALERTS;
+    // ======================================
+    // VALIDATE SELECTION
+    // ======================================
+
+    var sel =
+        doc.selection;
+
+
+    if(
+        sel.length === 0
+    ){
+
+        RESULT =
+            "ERROR: No objects are selected.";
+
+        throw new Error();
+
+    }
 
 
     // ======================================
@@ -316,22 +328,6 @@ function main(){
 
     var itemsToGroup =
         [];
-
-
-    var sel =
-        doc.selection;
-
-
-    if(
-        sel.length === 0
-    ){
-
-        RESULT =
-            "ERROR: No objects are selected.";
-
-        throw new Error();
-
-    }
 
 
     var userChoice =
@@ -468,8 +464,14 @@ try{
 
     main();
 
-    RESULT =
-        "SUCCESS: Outline created successfully.";
+    if(
+        RESULT === ""
+    ){
+
+        RESULT =
+            "SUCCESS: Outline created successfully.";
+
+    }
 
 }
 catch(e){
