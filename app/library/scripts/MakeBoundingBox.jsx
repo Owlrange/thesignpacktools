@@ -190,13 +190,16 @@ function processItem(item, userChoice){
 
 
     // Convert text to outlines
+    // createOutline() replaces the TextFrame,
+    // so the returned outline must be assigned back to copy
 
     if(
         copy.typename ===
         "TextFrame"
     ){
 
-        copy.createOutline();
+        copy =
+            copy.createOutline();
 
     }
 
