@@ -239,6 +239,26 @@ function main(){
 
 
     // ==========================================
+    // ASK WHETHER TO DELETE ORIGINAL
+    // ==========================================
+
+    var userChoice =
+        askDeleteOriginal();
+
+
+    if(
+        userChoice === "cancel"
+    ){
+
+        RESULT =
+            "WARNING: Operation cancelled.";
+
+        return;
+
+    }
+
+
+    // ==========================================
     // ENSURE CUT CONTOUR LAYER
     // ==========================================
 
@@ -336,22 +356,6 @@ function main(){
     // ==========================================
     // PROCESS SELECTION
     // ==========================================
-
-    var sel =
-        doc.selection;
-
-
-    if(
-        sel.length === 0
-    ){
-
-        RESULT =
-            "ERROR: No object selected.";
-
-        throw new Error();
-
-    }
-
 
     for(
         var i = 0;
