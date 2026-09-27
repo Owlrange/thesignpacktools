@@ -223,7 +223,7 @@ function askArtboards(doc) {
         w.add(
             "statictext",
             undefined,
-            "0 de " +
+            "0 of " +
             doc.artboards.length +
             " selecionadas"
         );
@@ -256,9 +256,9 @@ function askArtboards(doc) {
 
         counter.text =
             count +
-            " de " +
+            " of " +
             doc.artboards.length +
-            " selecionadas";
+            " selected";
 
     }
 
