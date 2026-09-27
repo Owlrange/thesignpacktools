@@ -2,29 +2,28 @@
 
 var RESULT = "";
 var doc = null;
-var artboards = null;
 var black = null;
 var outlineLayer = null;
 
 
 //====================================
-// Cor da layer
+// Create Layer Color
 //====================================
-function criarCorlayer() {
+function createLayerColor() {
 
-    var cor = new RGBColor();
+    var color = new RGBColor();
 
-    cor.red = 0;
-    cor.green = 0;
-    cor.blue = 0;
+    color.red = 0;
+    color.green = 0;
+    color.blue = 0;
 
-    return cor;
+    return color;
 
 }
 
 
 //====================================
-// Espessura de 1 pt considerando Scale Factor
+// 1 pt Stroke Considering Scale Factor
 //====================================
 function getStroke1pt(doc) {
 
@@ -37,32 +36,37 @@ function getStroke1pt(doc) {
 
 
 //====================================
-// Layer Outline
+// Outline Layer
 //====================================
 function getOutlineLayer(doc) {
 
+    var layer;
+
     try {
 
-        return doc.layers.getByName("Outline");
+        layer = doc.layers.getByName("Outline");
 
     }
     catch(e) {
 
-        var layer = doc.layers.add();
+        layer = doc.layers.add();
 
         layer.name = "Outline";
-        layer.printable = true;
-        layer.color = criarCorlayer();
-
-        return layer;
+        layer.color = createLayerColor();
 
     }
+
+    layer.printable = true;
+    layer.visible = true;
+    layer.locked = false;
+
+    return layer;
 
 }
 
 
 //====================================
-// Preto CMYK
+// Black CMYK
 //====================================
 function getBlack() {
 
@@ -79,7 +83,7 @@ function getBlack() {
 
 
 //====================================
-// Seleção de Artboards
+// Artboard Selection
 //====================================
 function askArtboards(doc) {
 
@@ -95,7 +99,7 @@ function askArtboards(doc) {
 
 
     //====================================
-    // Título
+    // Title
     //====================================
 
     w.add(
@@ -103,8 +107,9 @@ function askArtboards(doc) {
         undefined,
         "Select artboards:"
     );
-	
-	//====================================
+
+
+    //====================================
     // Select All / Select None
     //====================================
 
@@ -134,49 +139,7 @@ function askArtboards(doc) {
 
 
     //====================================
-    // Select All
-    //====================================
-
-    selectAll.onClick = function() {
-
-        for (
-            var i = 0;
-            i < list.items.length;
-            i++
-        ) {
-
-            list.items[i].selected = true;
-
-        }
-
-        updateCounter();
-
-    };
-
-
-    //====================================
-    // Select None
-    //====================================
-
-    selectNone.onClick = function() {
-
-        for (
-            var i = 0;
-            i < list.items.length;
-            i++
-        ) {
-
-            list.items[i].selected = false;
-
-        }
-
-        updateCounter();
-
-    };
-
-
-    //====================================
-    // Lista de Artboards
+    // Artboard List
     //====================================
 
     var list = w.add(
@@ -195,7 +158,7 @@ function askArtboards(doc) {
 
 
     //====================================
-    // Adiciona Artboards
+    // Add Artboards
     //====================================
 
     for (
@@ -209,14 +172,13 @@ function askArtboards(doc) {
             doc.artboards[i].name
         );
 
-        // Guarda o índice da artboard
         item.artboardIndex = i;
 
     }
 
 
     //====================================
-    // Contador
+    // Selection Counter
     //====================================
 
     var counter =
@@ -225,12 +187,12 @@ function askArtboards(doc) {
             undefined,
             "0 of " +
             doc.artboards.length +
-            " selecionadas"
+            " selected"
         );
 
 
     //====================================
-    // Atualiza contador
+    // Update Counter
     //====================================
 
     function updateCounter() {
@@ -263,16 +225,12 @@ function askArtboards(doc) {
     }
 
 
-    // Atualiza quando a seleção muda
     list.onChange =
         updateCounter;
 
 
-    
-
-
     //====================================
-    // OK / Cancel
+    // Create Button
     //====================================
 
     var buttons =
@@ -284,7 +242,7 @@ function askArtboards(doc) {
         "center";
 
 
-    var ok =
+    var createButton =
         buttons.add(
             "button",
             undefined,
@@ -294,11 +252,12 @@ function askArtboards(doc) {
 
     var result = null;
 
+
     //====================================
-    // OK
+    // Create
     //====================================
 
-    ok.onClick = function() {
+    createButton.onClick = function() {
 
         var selection =
             list.selection;
@@ -346,7 +305,7 @@ function askArtboards(doc) {
 
 
     //====================================
-    // Abre janela
+    // Show Dialog
     //====================================
 
     w.show();
@@ -367,15 +326,15 @@ function main() {
         RESULT =
             "ERROR: No document is open.";
 
-        throw new Error();
+        return;
 
     }
 
     doc = app.activeDocument;
-    artboards = doc.artboards;
 
     var selectedArtboards =
         askArtboards(doc);
+
 
     // Cancelled before any document modification
     if (selectedArtboards === null) {
@@ -387,6 +346,7 @@ function main() {
 
     }
 
+
     outlineLayer =
         getOutlineLayer(doc);
 
@@ -396,8 +356,9 @@ function main() {
     var stroke =
         getStroke1pt(doc);
 
+
     //====================================
-    // Cria Outline
+    // Create Artboard Contours
     //====================================
 
     for (
@@ -434,7 +395,7 @@ function main() {
 
 
 //====================================
-// EXECUÇÃO
+// EXECUTION
 //====================================
 
 try {
@@ -451,12 +412,13 @@ try {
 }
 catch(e) {
 
+    if (RESULT === "") {
 
         RESULT =
             "ERROR: Unexpected error:\n" +
             e.message;
 
-
+    }
 
 }
 
