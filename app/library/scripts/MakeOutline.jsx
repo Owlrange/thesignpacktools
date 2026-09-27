@@ -255,6 +255,22 @@ function main(){
     }
 
 
+    var userChoice =
+        askDeleteOriginal();
+
+
+    if(
+        userChoice === "cancel"
+    ){
+
+        RESULT =
+            "WARNING: Operation cancelled.";
+
+        return;
+
+    }
+
+
     // ======================================
     // ENSURE OUTLINE LAYER
     // ======================================
@@ -328,22 +344,6 @@ function main(){
 
     var itemsToGroup =
         [];
-
-
-    var userChoice =
-        askDeleteOriginal();
-
-
-    if(
-        userChoice === "cancel"
-    ){
-
-        RESULT =
-            "WARNING: Operation cancelled.";
-
-        return;
-
-    }
 
 
     for(
