@@ -5,9 +5,6 @@ var doc = null;
 var cutColor = null;
 
 
-app.userInteractionLevel =
-    UserInteractionLevel.DISPLAYALERTS;
-
 
 // ==========================================
 // GET CUT CONTOUR COLOR
@@ -220,20 +217,17 @@ function main(){
         app.activeDocument;
 
 
-    app.userInteractionLevel =
-        UserInteractionLevel.DISPLAYALERTS;
-
 
     // ==========================================
     // ENSURE CUT CONTOUR LAYER
     // ==========================================
 
-    var outlineLayer;
+    var cutContourLayer;
 
 
     try{
 
-        outlineLayer =
+        cutContourLayer =
             doc.layers.getByName(
                 "CutContour"
             );
@@ -241,13 +235,13 @@ function main(){
     }
     catch(e){
 
-        outlineLayer =
+        cutContourLayer =
             doc.layers.add();
 
-        outlineLayer.name =
+        cutContourLayer.name =
             "CutContour";
 
-        outlineLayer.color =
+        cutContourLayer.color =
             createColor(
                 255,
                 79,
@@ -262,7 +256,7 @@ function main(){
     // ==========================================
 
     if(
-        outlineLayer.locked
+        cutContourLayer.locked
     ){
 
         RESULT =
@@ -274,7 +268,7 @@ function main(){
 
 
     if(
-        !outlineLayer.visible
+        !cutContourLayer.visible
     ){
 
         RESULT =
@@ -296,15 +290,23 @@ function main(){
 
 
     // ==========================================
-    // STORE PROCESSED ITEMS
+    // VALIDATE SELECTION
     // ==========================================
 
-    var itemsToGroup =
-        [];
+    var sel =
+        doc.selection;
 
 
-    var userChoice =
-        askDeleteOriginal();
+    if(
+        sel.length === 0
+    ){
+
+        RESULT =
+            "ERROR: No objects are selected.";
+
+        throw new Error();
+
+    }
 
 
     // ==========================================
@@ -415,7 +417,7 @@ function main(){
 
 
         finalGroup.move(
-            outlineLayer,
+            cutContourLayer,
             ElementPlacement.PLACEATBEGINNING
         );
 
@@ -425,7 +427,7 @@ function main(){
     ){
 
         itemsToGroup[0].move(
-            outlineLayer,
+            cutContourLayer,
             ElementPlacement.PLACEATBEGINNING
         );
 
@@ -525,8 +527,14 @@ try{
     main();
 
 
-    RESULT =
-        "SUCCESS: CutContour created successfully.";
+    if(
+        RESULT === ""
+    ){
+
+        RESULT =
+            "SUCCESS: CutContour created successfully.";
+
+    }
 
 }
 catch(e){
