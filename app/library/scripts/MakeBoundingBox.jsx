@@ -2,11 +2,7 @@
 
 var RESULT = "";
 var doc = null;
-var outlineLayer = null;
-
-
-app.userInteractionLevel =
-    UserInteractionLevel.DISPLAYALERTS;
+var boundingBoxLayer = null;
 
 
 // ==========================================
@@ -23,105 +19,6 @@ function criarCor(r, g, b) {
     cor.blue = b;
 
     return cor;
-
-}
-
-
-// ==========================================
-// ENSURE BOUNDING BOX LAYER
-// ==========================================
-
-function main(){
-
-    doc =
-        app.activeDocument;
-
-
-    try {
-
-        outlineLayer =
-            doc.layers.getByName(
-                "BoundingBox"
-            );
-
-    }
-    catch (e) {
-
-        outlineLayer =
-            doc.layers.add();
-
-        outlineLayer.name =
-            "BoundingBox";
-
-        outlineLayer.color =
-            criarCor(
-                153,
-                204,
-                0
-            );
-
-    }
-
-
-    // ==========================================
-    // VALIDATE LAYER
-    // ==========================================
-
-    if(
-        outlineLayer.locked
-    ){
-
-        RESULT =
-            "ERROR: The 'BoundingBox' layer is locked.";
-
-        throw new Error();
-
-    }
-
-
-    if(
-        !outlineLayer.visible
-    ){
-
-        RESULT =
-            "ERROR: The 'BoundingBox' layer is hidden.";
-
-        throw new Error();
-
-    }
-
-
-    // ==========================================
-    // PROCESS SELECTION
-    // ==========================================
-
-    var sel =
-        doc.selection;
-
-
-    if(
-        sel.length === 0
-    ){
-
-        RESULT =
-            "ERROR: No objects selected.";
-
-        throw new Error();
-
-    }
-
-
-    for(
-        var i = doc.selection.length - 1;
-        i >= 0;
-        i--
-    ){
-
-        processItem(
-            sel[i]
-        );
-
-    }
 
 }
 
@@ -177,7 +74,7 @@ function askDeleteOriginal(){
 
 
     var result =
-        "keep";
+        "cancel";
 
 
     keepBtn.onClick =
@@ -211,10 +108,72 @@ function askDeleteOriginal(){
 
 
 // ==========================================
+// ENSURE BOUNDING BOX LAYER
+// ==========================================
+
+function ensureBoundingBoxLayer(){
+
+    try {
+
+        boundingBoxLayer =
+            doc.layers.getByName(
+                "BoundingBox"
+            );
+
+    }
+    catch (e) {
+
+        boundingBoxLayer =
+            doc.layers.add();
+
+        boundingBoxLayer.name =
+            "BoundingBox";
+
+        boundingBoxLayer.color =
+            criarCor(
+                153,
+                204,
+                0
+            );
+
+    }
+
+
+    // ==========================================
+    // VALIDATE LAYER
+    // ==========================================
+
+    if(
+        boundingBoxLayer.locked
+    ){
+
+        RESULT =
+            "ERROR: The 'BoundingBox' layer is locked.";
+
+        throw new Error();
+
+    }
+
+
+    if(
+        !boundingBoxLayer.visible
+    ){
+
+        RESULT =
+            "ERROR: The 'BoundingBox' layer is hidden.";
+
+        throw new Error();
+
+    }
+
+}
+
+
+// ==========================================
 // PROCESS SELECTED ITEM
 // ==========================================
 
-function processItem(item){
+function processItem(item, userChoice){
 
     // Duplicate object
 
@@ -225,7 +184,7 @@ function processItem(item){
     // Move duplicate to BoundingBox layer
 
     copy.move(
-        outlineLayer,
+        boundingBoxLayer,
         ElementPlacement.PLACEATBEGINNING
     );
 
@@ -245,10 +204,6 @@ function processItem(item){
     aplicarStroke(
         copy
     );
-
-
-    var userChoice =
-        askDeleteOriginal();
 
 
     // Remove original only if requested
@@ -345,6 +300,96 @@ function aplicarStroke(item){
 
 
 // ==========================================
+// MAIN
+// ==========================================
+
+function main(){
+
+    if(
+        app.documents.length === 0
+    ){
+
+        RESULT =
+            "ERROR: No document is open.";
+
+        throw new Error();
+
+    }
+
+
+    doc =
+        app.activeDocument;
+
+
+    // ==========================================
+    // VALIDATE SELECTION BEFORE MODIFICATION
+    // ==========================================
+
+    var sel =
+        doc.selection;
+
+
+    if(
+        sel.length === 0
+    ){
+
+        RESULT =
+            "ERROR: No objects are selected.";
+
+        throw new Error();
+
+    }
+
+
+    // ==========================================
+    // ASK ONCE FOR ENTIRE SELECTION
+    // ==========================================
+
+    var userChoice =
+        askDeleteOriginal();
+
+
+    if(
+        userChoice ===
+        "cancel"
+    ){
+
+        RESULT =
+            "WARNING: Operation cancelled.";
+
+        return;
+
+    }
+
+
+    // ==========================================
+    // ENSURE BOUNDING BOX LAYER
+    // ==========================================
+
+    ensureBoundingBoxLayer();
+
+
+    // ==========================================
+    // PROCESS SELECTION
+    // ==========================================
+
+    for(
+        var i = doc.selection.length - 1;
+        i >= 0;
+        i--
+    ){
+
+        processItem(
+            sel[i],
+            userChoice
+        );
+
+    }
+
+}
+
+
+// ==========================================
 // EXECUTE
 // ==========================================
 
@@ -352,8 +397,14 @@ try {
 
     main();
 
-    RESULT =
-        "SUCCESS: BoundingBox created successfully.";
+    if(
+        RESULT === ""
+    ){
+
+        RESULT =
+            "SUCCESS: BoundingBox created successfully.";
+
+    }
 
 }
 catch(e){
