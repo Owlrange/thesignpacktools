@@ -1,1 +1,44 @@
 site_name: The Sign Pack Tools
+
+theme:
+  name: null
+  custom_dir: docs/theme
+  plugins:
+  - search
+
+nav:
+  - Overview: overview.md
+
+  - Getting Started:
+      - What is The Sign Pack Tools?: 01-getting-started/what-is-the-sign-pack-tools.md
+      - How the System Works: 01-getting-started/how-the-system-works.md
+
+  - Installation:
+      - Requirements: 02-installation/requirements.md
+      - Installation: 02-installation/installation.md
+      - First Launch: 02-installation/first-launch.md
+      - Folder Structure: 02-installation/folder-structure.md
+
+  - Library:
+      - Library: 03-library/library.md
+      - Library Structure: 03-library/library-structure.md
+      - Update System: 03-library/update-system.md
+      - Updating: 03-library/updating.md
+
+  - Tools:
+      - Tools Overview: 04-tools/tools_overview.md
+      - Tools: 04-tools/tools.md
+      - Production: 04-tools/production.md
+
+  - Search:
+      - Search System: 05-search/search-system.md
+      - Search Index: 05-search/search-index.md
+
+  - Notifications:
+      - Notification System: 06-notify/notify-system.md
+      - Error Handling: 06-notify/error-handling.md
+
+  - Versioning:
+      - Version System: 08-versioning/version-system.md
+      - Major / Minor / Patch: 08-versioning/major-minor-patch.md
+      - Release Process: 08-versioning/release-process.md
