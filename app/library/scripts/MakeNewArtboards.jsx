@@ -1,7 +1,7 @@
 #target illustrator
 
 var RESULT = "";
-var doc = null;
+var doc = app.activeDocument;
 
 
 //==================================================
@@ -10,24 +10,12 @@ var doc = null;
 
 function main(){
 
-    if(app.documents.length === 0){
-
-        RESULT =
-            "ERROR: No document is open.";
-
-        return;
-
-    }
-
-    doc = app.activeDocument;
-
-
     if(doc.selection.length === 0){
 
         RESULT =
             "ERROR: Select one or more objects.";
 
-        return;
+        throw new Error();
 
     }
 
@@ -38,16 +26,20 @@ function main(){
 
     var arrangement =
         askArrangement();
-
-
-    if(arrangement === null){
+		
+		 if(
+        arrangement === null
+    ){
 
         RESULT =
             "WARNING: Operation cancelled.";
 
-        return;
+        throw new Error();
 
     }
+
+
+
 
 
     //================================================
@@ -69,6 +61,7 @@ function main(){
 
         try{
 
+            // Verify that the object has valid bounds
             item.geometricBounds;
 
             items.push(item);
@@ -88,21 +81,40 @@ function main(){
         RESULT =
             "ERROR: No objects with valid geometric bounds found.";
 
-        return;
+        throw new Error();
 
     }
+
+
+    sendNotify(
+        "Create New Artboard",
+        items.length +
+        " object(s) selected."
+    );
 
 
     //================================================
     // Sort objects
     //================================================
 
-    if(arrangement === "row"){
+    if(
+        arrangement === "row"
+    ){
+
+        sendNotify(
+            "Create New Artboard",
+            "Arranging artboards by row..."
+        );
 
         sortByRow(items);
 
     }
     else{
+
+        sendNotify(
+            "Create New Artboard",
+            "Arranging artboards by column..."
+        );
 
         sortByColumn(items);
 
@@ -129,6 +141,13 @@ function main(){
 
     }
 
+
+    sendNotify(
+        "Create New Artboard",
+        items.length +
+        " artboard(s) created successfully."
+    );
+
 }
 
 
@@ -151,9 +170,6 @@ function askArrangement(){
     w.alignChildren =
         "fill";
 
-    w.spacing = 8;
-    w.margins = 12;
-
 
     //================================================
     // Description
@@ -167,7 +183,7 @@ function askArrangement(){
 
 
     //================================================
-    // Arrangement Options
+    // Arrangement options
     //================================================
 
     var options =
@@ -201,6 +217,7 @@ function askArrangement(){
         );
 
 
+    // Default option
     rowRadio.value =
         true;
 
@@ -216,7 +233,8 @@ function askArrangement(){
         "center";
 
 
-    var createButton =
+
+    var createBtn =
         buttons.add(
             "button",
             undefined,
@@ -229,13 +247,17 @@ function askArrangement(){
 
 
     //================================================
-    // Create
+    // Button actions
     //================================================
 
-    createButton.onClick =
+ 
+
+    createBtn.onClick =
         function(){
 
-            if(rowRadio.value){
+            if(
+                rowRadio.value
+            ){
 
                 result =
                     "row";
@@ -252,10 +274,6 @@ function askArrangement(){
 
         };
 
-
-    //================================================
-    // Show Dialog
-    //================================================
 
     w.show();
 
@@ -298,7 +316,7 @@ function verticalOverlap(a, b){
         bBounds[3];
 
 
-    return(
+    return (
         aBottom <= bTop &&
         bBottom <= aTop
     );
@@ -335,7 +353,7 @@ function horizontalOverlap(a, b){
         bBounds[2];
 
 
-    return(
+    return (
         aLeft <= bRight &&
         bLeft <= aRight
     );
@@ -427,6 +445,7 @@ function sortByRow(items){
         }
 
 
+        // Create new row
         if(!placed){
 
             rows.push(
@@ -445,7 +464,7 @@ function sortByRow(items){
     rows.sort(
         function(a, b){
 
-            return(
+            return (
                 getTop(b) -
                 getTop(a)
             );
@@ -474,7 +493,7 @@ function sortByRow(items){
                     b.geometricBounds[0];
 
 
-                return(
+                return (
                     aLeft -
                     bLeft
                 );
@@ -600,6 +619,7 @@ function sortByColumn(items){
         }
 
 
+        // Create new column
         if(!placed){
 
             columns.push(
@@ -618,7 +638,7 @@ function sortByColumn(items){
     columns.sort(
         function(a, b){
 
-            return(
+            return (
                 getLeft(a) -
                 getLeft(b)
             );
@@ -647,7 +667,7 @@ function sortByColumn(items){
                     b.geometricBounds[1];
 
 
-                return(
+                return (
                     bTop -
                     aTop
                 );
@@ -709,7 +729,9 @@ function getTop(items){
             items[i].geometricBounds[1];
 
 
-        if(itemTop > top){
+        if(
+            itemTop > top
+        ){
 
             top =
                 itemTop;
@@ -744,7 +766,9 @@ function getLeft(items){
             items[i].geometricBounds[0];
 
 
-        if(itemLeft < left){
+        if(
+            itemLeft < left
+        ){
 
             left =
                 itemLeft;
@@ -760,6 +784,38 @@ function getLeft(items){
 
 
 //==================================================
+// NOTIFY
+//
+// Uses the existing CEP notification system
+// when available.
+//==================================================
+
+function sendNotify(title, message){
+
+    try{
+
+        if(
+            typeof notify === "function"
+        ){
+
+            notify(
+                message,
+                "info"
+            );
+
+        }
+
+    }
+    catch(e){
+
+        // Ignore notification errors
+
+    }
+
+}
+
+
+//==================================================
 // EXECUTION
 //==================================================
 
@@ -767,20 +823,18 @@ try{
 
     main();
 
-    if(RESULT === ""){
-
-        RESULT =
-            "SUCCESS: Artboards created successfully.";
-
-    }
+    RESULT =
+        "SUCCESS: Artboards created successfully.";
 
 }
 catch(e){
 
-    if(RESULT === ""){
+    if(
+        RESULT === ""
+    ){
 
         RESULT =
-            "ERROR: Unexpected error:\n" +
+            "ERROR: " +
             e.message;
 
     }

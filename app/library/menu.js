@@ -169,7 +169,10 @@ const MENU = [
                 id: "prodpreparation",
                 title: "Prod Preparation",
                 description: "Clean files, Delete layers...",
-				help: "https://netorgft7340194.sharepoint.com/sites/TheSignPack2/SitePages/Production---Print-%26-Cut.aspx?web=1#getting-started",
+				help: {
+					type: "url",
+					url: "https://netorgft7340194.sharepoint.com/sites/TheSignPack2/SitePages/Production---Print-%26-Cut.aspx?web=1#getting-started"
+				},
 				tags: [
 					"pre",
 					"prod",
@@ -181,7 +184,10 @@ const MENU = [
                 id: "outline",
                 title: "Create Outline",
                 description: "for cutting rigid materials such as ACM, aluminum, and acrylic.",
-				help: "",
+				help: {
+					type: "local",
+					path: "docs/04-tools/tools.md"
+				},
 				tags: []
             },
 

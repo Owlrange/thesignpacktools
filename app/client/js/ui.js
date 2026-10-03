@@ -133,17 +133,72 @@ function createAccordion(container, menu){
                 button.appendChild(help);
 
 
-                help.onclick =
-                    function(e){
+               help.onclick =
+					function(e){
 
-                        e.stopPropagation();
+						e.stopPropagation();
 
-                        new CSInterface()
-                            .openURLInDefaultBrowser(
-                                tool.help
-                            );
 
-                    };
+						// ======================================
+						// LOCAL DOCUMENTATION
+						// ======================================
+
+						if(
+							tool.help &&
+							tool.help.type === "local"
+						){
+
+							var localPath =
+								CACHE.getFilePath(
+									tool.help.path
+								);
+
+
+							if(!localPath){
+
+								notify(
+									"Documentation is not available.",
+									"error"
+								);
+
+								return;
+
+							}
+
+							var fileURL =
+								"file:///" +
+								localPath.replace(
+									/\\/g,
+									"/"
+								);
+
+							window.cep.util.openURLInDefaultBrowser(
+								fileURL
+							);
+
+							return;
+
+						}
+
+
+						// ======================================
+						// EXTERNAL URL
+						// ======================================
+
+						if(
+							tool.help &&
+							tool.help.type === "url"
+						){
+
+							 window.cep.util.openURLInDefaultBrowser(
+        tool.help.url
+    );
+
+							return;
+
+						}
+
+					};
 
             }
 
