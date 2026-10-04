@@ -1613,42 +1613,52 @@ body.sidebar-visible::before {
 .section-anchor-nav {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    align-items: center;
+    gap: 0;
 
-    margin: -12px 0 32px;
+    margin: -8px 0 32px;
 
     padding-bottom: 18px;
 
-    border-bottom: 1px solid var(--theme-border);
+    border-bottom: 2px solid #d9dde0;
+}
+
+
+.section-anchor-label {
+    color: var(--theme-text);
+
+    font-size: 12px;
+    font-weight: 600;
+
+    margin-right: 8px;
 }
 
 
 .section-anchor-link {
     display: inline-block;
 
-    padding: 5px 10px;
-
-    border-radius: 4px;
-
-    color: #6b7277;
+    color: var(--theme-primary);
 
     font-size: 12px;
     font-weight: 500;
 
     line-height: 1.4;
 
-    background: #f5f7f6;
+    transition: color 0.2s ease;
+}
 
-    transition:
-        color 0.2s ease,
-        background-color 0.2s ease;
+
+.section-anchor-link:not(:last-child)::after {
+    content: "·";
+
+    margin: 0 8px;
+
+    color: var(--theme-border);
 }
 
 
 .section-anchor-link:hover {
-    color: var(--theme-primary);
-
-    background: rgba(40, 183, 107, 0.09);
+    color: var(--theme-primary-dark);
 }
 
 

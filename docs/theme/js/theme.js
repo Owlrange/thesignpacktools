@@ -90,28 +90,37 @@ if (docsSection) {
 
     if (headings.length > 0) {
 
-        const anchorNav = document.createElement("nav");
+       const anchorNav = document.createElement("nav");
 
-        anchorNav.className = "section-anchor-nav";
-        anchorNav.setAttribute("aria-label", "Page sections");
+			anchorNav.className = "section-anchor-nav";
+			anchorNav.setAttribute("aria-label", "Page sections");
 
-        headings.forEach(function (heading) {
 
-            const link = document.createElement("a");
+			const label = document.createElement("span");
 
-            link.className = "section-anchor-link";
-            link.href = "#" + heading.id;
-            link.textContent = heading.textContent;
+			label.className = "section-anchor-label";
+			label.textContent = "Go to:";
 
-            anchorNav.appendChild(link);
+			anchorNav.appendChild(label);
 
-        });
 
-        docsSection.insertAdjacentElement(
-            "beforebegin",
-            anchorNav
-        );
+			headings.forEach(function (heading) {
 
+				const link = document.createElement("a");
+
+				link.className = "section-anchor-link";
+				link.href = "#" + heading.id;
+				link.textContent = heading.textContent;
+
+				anchorNav.appendChild(link);
+
+			});
+
+
+			docsSection.insertAdjacentElement(
+				"beforebegin",
+				anchorNav
+			);
     }
 
 }
