@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta name="viewport"
@@ -18,30 +19,45 @@
         {% endif %}
     </title>
 
-    <!-- CoderDocs-style font -->
+
+    <!-- CoderDocs typography -->
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
+
 
     <!-- Font Awesome -->
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
+
     <!-- Theme CSS -->
-    <link rel="stylesheet" href="{{ 'theme/css/theme.css' | url }}">
+    <link
+        rel="stylesheet"
+        href="{{ 'theme/css/theme.css' | url }}">
+
 
     {% block extrahead %}
     {% endblock %}
+
 </head>
 
+
 <body>
+
+
+<!-- =========================================================
+     HEADER
+     ========================================================= -->
 
 <header class="header fixed-top">
 
     <div class="header-inner">
 
-        <!-- Mobile menu button -->
+
+        <!-- Mobile menu -->
+
         <button
             class="mobile-sidebar-toggle"
             id="sidebar-toggle"
@@ -54,7 +70,10 @@
 
 
         <!-- Brand -->
-        <a class="brand" href="{{ nav.homepage.url | url }}">
+
+        <a
+            class="brand"
+            href="{{ 'overview/' | url }}">
 
             <span class="brand-icon">
                 <i class="fas fa-layer-group"></i>
@@ -68,6 +87,7 @@
 
 
         <!-- Search -->
+
         <form
             class="docs-search-form"
             action="{{ 'search.html' | url }}"
@@ -79,62 +99,139 @@
                 placeholder="Search the documentation..."
                 aria-label="Search documentation">
 
-            <button type="submit" aria-label="Search">
+            <button
+                type="submit"
+                aria-label="Search">
+
                 <i class="fas fa-search"></i>
+
             </button>
 
         </form>
+
 
     </div>
 
 </header>
 
 
+<!-- =========================================================
+     DOCUMENTATION WRAPPER
+     ========================================================= -->
+
 <div class="docs-wrapper">
 
 
-    <!-- SIDEBAR -->
-    <aside class="docs-sidebar" id="docs-sidebar">
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside
+        class="docs-sidebar"
+        id="docs-sidebar">
+
 
         <nav class="docs-nav">
 
             <ul class="sidebar-list">
 
+
+                <!-- =============================================
+                     Navigation icon helper
+                     ============================================= -->
+
+                {% macro section_icon(title) %}
+
+                    {% if title == "Getting Started" %}
+                        <i class="fas fa-rocket"></i>
+
+                    {% elif title == "Installation" %}
+                        <i class="fas fa-download"></i>
+
+                    {% elif title == "Library" %}
+                        <i class="fas fa-box"></i>
+
+                    {% elif title == "Tools" %}
+                        <i class="fas fa-tools"></i>
+
+                    {% elif title == "Search" %}
+                        <i class="fas fa-search"></i>
+
+                    {% elif title == "Notifications" %}
+                        <i class="fas fa-bell"></i>
+
+                    {% elif title == "Versioning" %}
+                        <i class="fas fa-code-branch"></i>
+
+                    {% else %}
+                        <i class="fas fa-folder"></i>
+
+                    {% endif %}
+
+                {% endmacro %}
+
+
+                <!-- =============================================
+                     Recursive navigation renderer
+                     ============================================= -->
+
                 {% macro render_nav_item(nav_item) %}
+
 
                     {% if nav_item.is_section %}
 
-                        <li class="nav-section">
+                        <li class="nav-item section-title">
 
-                            <div class="nav-section-title">
-                                {{ nav_item.title }}
+                            <div class="nav-section-heading">
+
+                                <span class="theme-icon-holder">
+
+                                    {{ section_icon(nav_item.title) }}
+
+                                </span>
+
+                                <span class="nav-section-title">
+
+                                    {{ nav_item.title }}
+
+                                </span>
+
                             </div>
 
-                            <ul class="section-items">
 
-                                {% for child in nav_item.children %}
+                            {% if nav_item.children %}
 
-                                    {{ render_nav_item(child) }}
+                                <ul class="section-items">
 
-                                {% endfor %}
+                                    {% for child in nav_item.children %}
 
-                            </ul>
+                                        {{ render_nav_item(child) }}
+
+                                    {% endfor %}
+
+                                </ul>
+
+                            {% endif %}
 
                         </li>
 
+
                     {% elif nav_item.is_page %}
 
-                        <li class="nav-item">
+                        <li class="nav-item{% if nav_item.active %} active{% endif %}">
 
                             <a
-                                class="nav-link {% if nav_item.active %}active{% endif %}"
+                                class="nav-link{% if nav_item.active %} active{% endif %}"
                                 href="{{ nav_item.url | url }}">
 
-                                {{ nav_item.title }}
+                                <span class="nav-link-text">
+                                    {{ nav_item.title }}
+                                </span>
 
                             </a>
 
                         </li>
+
 
                     {% elif nav_item.is_link %}
 
@@ -144,22 +241,31 @@
                                 class="nav-link"
                                 href="{{ nav_item.url }}">
 
-                                {{ nav_item.title }}
+                                <span class="nav-link-text">
+                                    {{ nav_item.title }}
+                                </span>
 
                             </a>
 
                         </li>
 
+
                     {% endif %}
+
 
                 {% endmacro %}
 
+
+                <!-- =============================================
+                     Render MkDocs navigation
+                     ============================================= -->
 
                 {% for nav_item in nav %}
 
                     {{ render_nav_item(nav_item) }}
 
                 {% endfor %}
+
 
             </ul>
 
@@ -168,23 +274,15 @@
     </aside>
 
 
-    <!-- CONTENT -->
+    <!-- =====================================================
+         MAIN CONTENT
+         ===================================================== -->
+
     <main class="docs-content">
 
         <article class="docs-article">
 
-            <header class="docs-header">
-
-                {% if page and page.title %}
-
-                    <h1 class="docs-heading">
-                        {{ page.title }}
-                    </h1>
-
-                {% endif %}
-
-            </header>
-
+            <!-- Markdown content -->
 
             <section class="docs-section">
 
@@ -193,9 +291,10 @@
             </section>
 
 
-            <!-- Previous / Next navigation -->
+            <!-- Previous / Next -->
 
             <nav class="page-navigation">
+
 
                 {% if page.previous_page %}
 
@@ -204,12 +303,16 @@
                         href="{{ page.previous_page.url | url }}">
 
                         <span class="page-nav-label">
+
                             <i class="fas fa-arrow-left"></i>
                             Previous
+
                         </span>
 
                         <span class="page-nav-title">
+
                             {{ page.previous_page.title }}
+
                         </span>
 
                     </a>
@@ -224,32 +327,46 @@
                         href="{{ page.next_page.url | url }}">
 
                         <span class="page-nav-label">
+
                             Next
                             <i class="fas fa-arrow-right"></i>
+
                         </span>
 
                         <span class="page-nav-title">
+
                             {{ page.next_page.title }}
+
                         </span>
 
                     </a>
 
                 {% endif %}
 
+
             </nav>
+
 
         </article>
 
     </main>
 
+
 </div>
 
 
-<!-- Theme JavaScript -->
-<script src="{{ 'theme/js/theme.js' | url }}"></script>
+<!-- =========================================================
+     THEME JAVASCRIPT
+     ========================================================= -->
+
+<script
+    src="{{ 'theme/js/theme.js' | url }}">
+</script>
+
 
 {% block scripts %}
 {% endblock %}
+
 
 </body>
 

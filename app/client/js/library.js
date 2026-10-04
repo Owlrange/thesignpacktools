@@ -1,6 +1,6 @@
 var LIBRARY = {
 
-    version: "0.0.0",
+    version: "0.0",
 
     remoteVersion: null,
 
@@ -77,8 +77,8 @@ var LIBRARY = {
 
 
                     LIBRARY.version =
-                        data.version ||
-                        "0.0.0";
+					data.version ||
+					"0.0";
 
 
                     callback(
@@ -147,82 +147,79 @@ var LIBRARY = {
     // ==========================================
 
     compareVersions: function(
-        localVersion,
-        remoteVersion
-    ){
+		localVersion,
+		remoteVersion
+	){
 
-        var local =
-            localVersion
-                .split(".")
-                .map(Number);
-
-
-        var remote =
-            remoteVersion
-                .split(".")
-                .map(Number);
+		var local =
+			localVersion
+				.split(".")
+				.map(Number);
 
 
-        var max =
-            Math.max(
-                local.length,
-                remote.length
-            );
+		var remote =
+			remoteVersion
+				.split(".")
+				.map(Number);
 
 
-        for(
-            var i = 0;
-            i < max;
-            i++
-        ){
-
-            var localValue =
-                local[i] || 0;
+		var max =
+			Math.max(
+				local.length,
+				remote.length
+			);
 
 
-            var remoteValue =
-                remote[i] || 0;
+		for(
+			var i = 0;
+			i < max;
+			i++
+		){
+
+			var localValue =
+				local[i] || 0;
 
 
-            if(
-                remoteValue >
-                localValue
-            ){
-
-                if(i === 0){
-
-                    return "major";
-
-                }
+			var remoteValue =
+				remote[i] || 0;
 
 
-                if(i === 1){
+			if(
+				remoteValue >
+				localValue
+			){
 
-                    return "minor";
+				if(i === 0){
 
-                }
+					return "major";
 
-
-                return "patch";
-
-            }
-
-
-            if(
-                remoteValue <
-                localValue
-            ){
-
-                return "none";
-
-            }
-
-        }
+				}
 
 
-        return "none";
+				if(i === 1){
 
-    },
+					return "minor";
+
+				}
+
+			}
+
+
+			if(
+				remoteValue <
+				localValue
+			){
+
+				return "none";
+
+			}
+
+		}
+
+
+		return "none";
+
+	},
 
 
     // ==========================================
