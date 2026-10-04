@@ -1605,3 +1605,57 @@ body.sidebar-visible::before {
     }
 
 }
+
+/* =========================================================
+   SECTION ANCHOR NAVIGATION
+   ========================================================= */
+
+.section-anchor-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    margin: -12px 0 32px;
+
+    padding-bottom: 18px;
+
+    border-bottom: 1px solid var(--theme-border);
+}
+
+
+.section-anchor-link {
+    display: inline-block;
+
+    padding: 5px 10px;
+
+    border-radius: 4px;
+
+    color: #6b7277;
+
+    font-size: 12px;
+    font-weight: 500;
+
+    line-height: 1.4;
+
+    background: #f5f7f6;
+
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease;
+}
+
+
+.section-anchor-link:hover {
+    color: var(--theme-primary);
+
+    background: rgba(40, 183, 107, 0.09);
+}
+
+
+/* =========================================================
+   H2 ANCHOR OFFSET
+   ========================================================= */
+
+.docs-section h2 {
+    scroll-margin-top: calc(var(--header-height) + 24px);
+}

@@ -119,6 +119,46 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =====================================================
+       H2 ANCHOR NAVIGATION
+       ===================================================== */
+
+    const docsSection = document.querySelector(".docs-section");
+    const docsHeader = document.querySelector(".docs-header");
+
+    if (docsSection && docsHeader) {
+
+        const headings = docsSection.querySelectorAll("h2[id]");
+
+        if (headings.length > 0) {
+
+            const anchorNav = document.createElement("nav");
+
+            anchorNav.className = "section-anchor-nav";
+            anchorNav.setAttribute("aria-label", "Page sections");
+
+            headings.forEach(function (heading) {
+
+                const link = document.createElement("a");
+
+                link.className = "section-anchor-link";
+                link.href = "#" + heading.id;
+                link.textContent = heading.textContent;
+
+                anchorNav.appendChild(link);
+
+            });
+
+            docsHeader.insertAdjacentElement(
+                "afterend",
+                anchorNav
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
        HANDLE WINDOW RESIZE
        ===================================================== */
 
