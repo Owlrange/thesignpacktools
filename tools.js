@@ -116,6 +116,10 @@ const TOOLS = {
 
     },
 	
+	whiteInk: {
+		file: "MakeWhiteInk.jsx"
+	},
+		
 	sqftcallout:{
 
         file:"SQFTCallout.jsx"
@@ -138,6 +142,16 @@ const TOOLS = {
 // =====================================
 
 function runTool(id){
+
+    if(id === "checkprod"){
+
+        cs.requestOpenExtension(
+            "com.caio.TheSignPackTools.preflight"
+        );
+
+        return;
+
+    }
 
     if(TOOLS[id]){
 

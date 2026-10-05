@@ -160,7 +160,7 @@ const MENU = [
 		
     {
         id: "production",
-        title: "Produção",
+        title: "Production",
         icon: "icons/production.svg",
 
         tools: [
@@ -213,7 +213,7 @@ const MENU = [
 
 			
             {
-                id: "white ink",
+                id: "whiteInk",
                 title: "Make White ink",
                 description: "Prepares the object for white ink printing",
 				help: "",
