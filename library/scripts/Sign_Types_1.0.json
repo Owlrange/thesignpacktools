@@ -1,0 +1,340 @@
+{
+  "author": "Joao Victor Malz",
+  "copyright": "(c) 2026 Joao Victor Malz",
+  "version": "1.0",
+  "defaultType": "Print & Cut Vinyl",
+  "colorsNote": "RGB values of Illustrator's layer colours. Guessed from the standard Illustrator list: confirm with a real file.",
+  "colors": {
+    "Black": [
+      0,
+      0,
+      0
+    ],
+    "Light Red": [
+      255,
+      79,
+      79
+    ],
+    "Medium Blue": [
+      0,
+      0,
+      255
+    ],
+    "Magenta": [
+      255,
+      0,
+      255
+    ]
+  },
+  "elementsNote": "element: black = 100% K (CMYK 0,0,0,100); magenta = CutContour spot or 100% M; null = any colour (the art's own colour).",
+  "types": [
+    {
+      "label": "Channel Letters",
+      "layers": [
+        {
+          "name": "Outline",
+          "color": "Black",
+          "stroke": 1,
+          "element": "black"
+        },
+        {
+          "name": "Pattern",
+          "color": "Black",
+          "stroke": 1,
+          "element": "black"
+        },
+        {
+          "name": "Reference",
+          "color": "Medium Blue",
+          "stroke": null,
+          "element": null
+        }
+      ]
+    },
+    {
+      "label": "Dimensional Letters",
+      "layers": [
+        {
+          "name": "Outline",
+          "color": "Black",
+          "stroke": 1,
+          "element": "black"
+        },
+        {
+          "name": "Pattern",
+          "color": "Black",
+          "stroke": 1,
+          "element": "black"
+        },
+        {
+          "name": "Reference",
+          "color": "Medium Blue",
+          "stroke": null,
+          "element": null
+        }
+      ]
+    },
+    {
+      "label": "Banners",
+      "layers": [
+        {
+          "name": "Design",
+          "color": "Light Red",
+          "stroke": null,
+          "element": null
+        }
+      ]
+    },
+    {
+      "label": "Cut Vinyl",
+      "layers": [
+        {
+          "name": "CutContour",
+          "color": "Magenta",
+          "stroke": 1,
+          "element": "magenta"
+        }
+      ]
+    },
+    {
+      "label": "Print & Cut Vinyl",
+      "layers": [
+        {
+          "name": "Design",
+          "color": "Light Red",
+          "stroke": null,
+          "element": null
+        },
+        {
+          "name": "CutContour",
+          "color": "Magenta",
+          "stroke": 1,
+          "element": "magenta"
+        }
+      ]
+    },
+    {
+      "label": "Window - Full Wrap",
+      "layers": [
+        {
+          "name": "Design",
+          "color": "Light Red",
+          "stroke": null,
+          "element": null
+        }
+      ]
+    },
+    {
+      "label": "Window - Decals",
+      "layers": [
+        {
+          "name": "Design",
+          "color": "Light Red",
+          "stroke": null,
+          "element": null
+        },
+        {
+          "name": "CutContour",
+          "color": "Magenta",
+          "stroke": 1,
+          "element": "magenta"
+        }
+      ]
+    },
+    {
+      "label": "Wall - Full Wrap",
+      "layers": [
+        {
+          "name": "Design",
+          "color": "Light Red",
+          "stroke": null,
+          "element": null
+        }
+      ]
+    },
+    {
+      "label": "Wall - Decals",
+      "layers": [
+        {
+          "name": "Design",
+          "color": "Light Red",
+          "stroke": null,
+          "element": null
+        },
+        {
+          "name": "CutContour",
+          "color": "Magenta",
+          "stroke": 1,
+          "element": "magenta"
+        }
+      ]
+    },
+    {
+      "label": "Vehicle - Full Wrap",
+      "layers": [
+        {
+          "name": "Design",
+          "color": "Light Red",
+          "stroke": null,
+          "element": null
+        },
+        {
+          "name": "Template",
+          "color": "Medium Blue",
+          "stroke": null,
+          "element": null
+        }
+      ]
+    },
+    {
+      "label": "Vehicle - Partial Wrap",
+      "layers": [
+        {
+          "name": "Design",
+          "color": "Light Red",
+          "stroke": null,
+          "element": null
+        },
+        {
+          "name": "CutContour",
+          "color": "Magenta",
+          "stroke": 1,
+          "element": "magenta"
+        },
+        {
+          "name": "Template",
+          "color": "Medium Blue",
+          "stroke": null,
+          "element": null
+        }
+      ]
+    },
+    {
+      "label": "Vehicle - Decals",
+      "layers": [
+        {
+          "name": "Design",
+          "color": "Light Red",
+          "stroke": null,
+          "element": null
+        },
+        {
+          "name": "CutContour",
+          "color": "Magenta",
+          "stroke": 1,
+          "element": "magenta"
+        },
+        {
+          "name": "Template",
+          "color": "Medium Blue",
+          "stroke": null,
+          "element": null
+        }
+      ]
+    },
+    {
+      "label": "ADA - Applique",
+      "layers": [
+        {
+          "name": "Outline",
+          "color": "Black",
+          "stroke": 1,
+          "element": "black"
+        },
+        {
+          "name": "Braille",
+          "color": "Black",
+          "stroke": 1,
+          "element": "black"
+        },
+        {
+          "name": "Tactile",
+          "color": "Black",
+          "stroke": 1,
+          "element": "black"
+        },
+        {
+          "name": "Bounding Box",
+          "color": "Light Red",
+          "stroke": null,
+          "element": null
+        }
+      ]
+    },
+    {
+      "label": "ADA - Printed",
+      "layers": [
+        {
+          "name": "Outline",
+          "color": "Black",
+          "stroke": 1,
+          "element": "black"
+        },
+        {
+          "name": "Braille",
+          "color": "Black",
+          "stroke": 1,
+          "element": "black"
+        },
+        {
+          "name": "Tactile",
+          "color": "Black",
+          "stroke": 1,
+          "element": "black"
+        },
+        {
+          "name": "Bounding Box",
+          "color": "Light Red",
+          "stroke": null,
+          "element": null
+        },
+        {
+          "name": "Design",
+          "color": "Light Red",
+          "stroke": null,
+          "element": null
+        }
+      ]
+    },
+    {
+      "label": "Monument",
+      "layers": [
+        {
+          "name": "Outline",
+          "color": "Black",
+          "stroke": 1,
+          "element": "black"
+        },
+        {
+          "name": "Reference",
+          "color": "Medium Blue",
+          "stroke": null,
+          "element": null
+        }
+      ]
+    },
+    {
+      "label": "Pylon Sign",
+      "layers": [
+        {
+          "name": "Outline",
+          "color": "Black",
+          "stroke": 1,
+          "element": "black"
+        },
+        {
+          "name": "Design",
+          "color": "Light Red",
+          "stroke": null,
+          "element": null
+        },
+        {
+          "name": "Reference",
+          "color": "Medium Blue",
+          "stroke": null,
+          "element": null
+        }
+      ]
+    }
+  ]
+}

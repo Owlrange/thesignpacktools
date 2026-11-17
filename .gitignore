@@ -1,19 +1,26 @@
-# Sistema operacional
+# Local configuration with the GitHub access token. Never commit.
+client/js/config.js
+
+# Operating system files
 .DS_Store
 Thumbs.db
 Desktop.ini
+desktop.ini
 
-# Arquivos temporários
+# Editor files
+.vscode/
+
+# Temporary files
 *.tmp
 *.temp
 *.log
 
-# Credenciais e certificados
+# Credentials and certificates
 *.p12
 *.pfx
 *.pem
 *.key
 
-# Arquivos de configuração local
+# Local environment files
 .env
 .env.*
