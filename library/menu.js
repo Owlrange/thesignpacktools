@@ -13,7 +13,7 @@ const MENU = [
                 title: "Create Reference Layer",
                 description: "Create the reference layer.",
 				help: "",
-				tags: [layer]
+				tags: ["layer"]
             },
 
             {
@@ -54,7 +54,7 @@ const MENU = [
                 title: "Standardize Layout",
                 description: "Make the multi-page presentation PDF, all pages the same size",
 				help: "",
-				tags: [Presentation, PDF]
+				tags: ["Presentation", "PDF"]
             },
 			
 			
@@ -97,7 +97,7 @@ const MENU = [
                 title: "Relink Missing Links",
                 description: "Fix missing or wrong links and embedded images",
 				help: "",
-				tags: [Image]
+				tags: ["Image"]
             },
 
             {
