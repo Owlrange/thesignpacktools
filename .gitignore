@@ -1,6 +1,11 @@
 # Local configuration with the GitHub access token. Never commit.
 client/js/config.js
 
+# Installer sources and release packages. Sent individually to testers.
+# The packages contain config.js with the token.
+installer/
+dist/
+
 # Operating system files
 .DS_Store
 Thumbs.db
