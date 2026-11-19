@@ -4,35 +4,26 @@
 //  Copyright: (c) 2026 Joao Victor Malz
 //  Created for use at The Sign Pack
 //
-//  Makes client-handoff PDFs (and optional .ai) that survive
-//  import into FlexiDesign/FlexiSIGN and other RIP/cut software
-//  that ignores Illustrator clipping masks.
+//  Makes client-handoff PDFs (and optional .ai) that survive import into
+//  FlexiDesign/FlexiSIGN and other RIP/cut software that ignores Illustrator
+//  clipping masks.
 //
-//  1.4 - New look (dark grey window, white text, green accents, The Sign Pack logo and title,
-//   green rounded Export button; STYLED_UI = false near the top gives the plain look back) in a
-//   wide layout with numbered topics. From Export Production Files: "Smart name" (project number
-//   from the file name, the project's production folder, the next free version, e.g.
-//   126080_Production Files_v3) and "Same version" (keeps the latest version in the folder, so
-//   it is overwritten). Click Smart name again to undo. The export itself is unchanged.
-//
-//  1.3 - simplified image handling with explicit options, and the company logo
-//   (white on dark UI, black on light UI) shows at the top of the window. Same layout
-//   rules as the other scripts: Export on the left, Close on the right, window at
-//   (90, 140), popups are dark Illustrator-style windows, centered:
-//   - Images inside clipping masks are rasterized (that's what a
-//     baked shape cut IS for pixels) at the DPI / color / background
-//     YOU pick in the UI: 150 or 300 DPI, CMYK or RGB,
+//   - Images inside clipping masks are rasterized (that is what a baked shape cut IS
+//     for pixels) at the DPI / color / background you pick: 150 or 300 DPI, CMYK or RGB,
 //     Transparent or White. Defaults: 150, CMYK, Transparent.
-//   - Vector content sharing a mask with an image still stays
-//     vector (children are split, each keeps the mask shape)
-//   - Resolution is auto-capped for very large art so Illustrator
-//     can't silently collapse it to garbage values
+//   - Vector content sharing a mask with an image stays vector (children are split,
+//     each keeps the mask shape).
+//   - Resolution is auto-capped for very large art so Illustrator can not silently
+//     collapse it to garbage values.
+//   - "Smart name": project number from the file name, the project's production folder
+//     and the next free version. "Same version" keeps the latest version in the folder
+//     (it is overwritten).
 //
-//  Also: per-artboard export, bleed option (trim cuts at the
-//  bleed mark), text outlined, grouped output, artboard-edge trim.
+//  Also: per-artboard export, bleed option (trim cuts at the bleed mark), text
+//  outlined, grouped output, artboard-edge trim.
 //
-//  IMPORTANT: compare output against the original before sending
-//  to a client the first time, and after any Illustrator update.
+//  IMPORTANT: compare output against the original before sending to a client the
+//  first time, and after any Illustrator update.
 // ============================================================
 
 #target illustrator

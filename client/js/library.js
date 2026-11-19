@@ -1,5 +1,30 @@
 var LIBRARY = {
 
+    // Progress hook: the app sets it to draw the update bar.
+    // onProgress(phase, done, total, name)  phase: "start" | "download" | "write" | "finish"
+    onProgress: null,
+
+    // fetch() with a time limit, so a slow network cannot hang the panel
+    fetchTimeout: function(url, options, ms){
+        var opts = {};
+        for(var k in options){ opts[k] = options[k]; }
+        var ctl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+        var timer = null;
+        if(ctl){
+            opts.signal = ctl.signal;
+            timer = setTimeout(function(){ ctl.abort(); }, ms);
+        }
+        return fetch(url, opts).then(
+            function(r){ if(timer){ clearTimeout(timer); } return r; },
+            function(e){
+                if(timer){ clearTimeout(timer); }
+                if(e && e.name === "AbortError"){ throw new Error("Network timeout."); }
+                throw e;
+            }
+        );
+    },
+
+
     version: "0.0",
 
     remoteVersion: null,
@@ -127,6 +152,28 @@ var LIBRARY = {
 
     getLocalVersion: function(callback){
 
+        // Read straight from the panel (cep.fs): no trip through Illustrator.
+        try{
+            var versionPath = CACHE.getFilePath("version.json");
+            var r = window.cep.fs.readFile(versionPath);
+            if(r && r.err === 0){
+                var text = String(r.data || "").replace(/^\uFEFF/, "");
+                var data = JSON.parse(text);
+                LIBRARY.version = data.version || "0.0";
+                callback(LIBRARY.version);
+                return;
+            }
+        }
+        catch(eFs){}
+
+        LIBRARY.getLocalVersionJsx(callback);
+
+    },
+
+
+    // Old way (through Illustrator), only used if the direct read fails
+    getLocalVersionJsx: function(callback){
+
         var versionPath =
             CACHE.getFilePath(
                 "version.json"
@@ -224,10 +271,7 @@ var LIBRARY = {
                 );
 
 
-            return fetch(
-                request.url,
-                request.options
-            );
+            return LIBRARY.fetchTimeout(request.url, request.options, 8000);
 
         })
         .then(function(response){
@@ -266,8 +310,14 @@ var LIBRARY = {
 
             }
 
+            var msg = String((error && error.message) || error || "");
 
-            callback(null);
+            callback(null, {
+                offline:
+                    (typeof navigator !== "undefined" && navigator.onLine === false) ||
+                    /Failed to fetch|NetworkError|Network timeout|Load failed|network/i.test(msg),
+                message: msg
+            });
 
         });
 
@@ -278,80 +328,33 @@ var LIBRARY = {
     // COMPARE VERSIONS
     // ==========================================
 
-    compareVersions: function(
-		localVersion,
-		remoteVersion
-	){
+    compareVersions: function(localVersion, remoteVersion){
 
-		var local =
-			localVersion
-				.split(".")
-				.map(Number);
+        var local = String(localVersion).split(".").map(Number);
+        var remote = String(remoteVersion).split(".").map(Number);
+        var max = Math.max(local.length, remote.length);
 
+        for(var i = 0; i < max; i++){
 
-		var remote =
-			remoteVersion
-				.split(".")
-				.map(Number);
+            var localValue = local[i] || 0;
+            var remoteValue = remote[i] || 0;
 
+            if(remoteValue > localValue){
+                if(i === 0){ return "major"; }
+                if(i === 1){ return "minor"; }
+                return "patch";
+            }
 
-		var max =
-			Math.max(
-				local.length,
-				remote.length
-			);
+            if(remoteValue < localValue){
+                return "none";
+            }
 
+        }
 
-		for(
-			var i = 0;
-			i < max;
-			i++
-		){
+        return "none";
 
-			var localValue =
-				local[i] || 0;
+    },
 
-
-			var remoteValue =
-				remote[i] || 0;
-
-
-			if(
-				remoteValue >
-				localValue
-			){
-
-				if(i === 0){
-
-					return "major";
-
-				}
-
-
-				if(i === 1){
-
-					return "minor";
-
-				}
-
-			}
-
-
-			if(
-				remoteValue <
-				localValue
-			){
-
-				return "none";
-
-			}
-
-		}
-
-
-		return "none";
-
-	},
 
 
     // ==========================================
@@ -379,16 +382,15 @@ var LIBRARY = {
 
 
                 LIBRARY.getRemoteManifest(
-                    function(manifest){
+                    function(manifest, failure){
 
                         if(!manifest){
 
                             callback({
-
                                 success: false,
-
-                                hasUpdate: false
-
+                                hasUpdate: false,
+                                offline: !!(failure && failure.offline),
+                                error: failure ? failure.message : ""
                             });
 
                             return;
@@ -455,10 +457,7 @@ var LIBRARY = {
                 );
 
 
-            return fetch(
-                request.url,
-                request.options
-            );
+            return LIBRARY.fetchTimeout(request.url, request.options, 30000);
 
         })
         .then(function(response){
@@ -515,89 +514,77 @@ var LIBRARY = {
     // DOWNLOAD ALL FILES
     // ==========================================
 
-    downloadFiles: function(
-        files,
-        index,
-        downloaded,
-        callback
-    ){
+    downloadFiles: function(files, index, downloaded, callback){
 
-        if(
-            index >= files.length
-        ){
+        // Up to 4 files at the same time. Nothing is written to the library here:
+        // the files are only written after ALL of them arrived.
 
-            callback({
+        var total = files.length;
 
-                success: true,
-
-                files:
-                    downloaded
-
-            });
-
+        if(total === 0){
+            callback({ success: true, files: [] });
             return;
-
         }
 
+        var results = new Array(total);
+        var done = 0, next = 0, active = 0, failed = false;
 
-        var currentFile =
-            files[index];
+        function launch(){
 
+            if(failed){ return; }
 
-        notify(
-            "Downloading file " +
-            (index + 1) +
-            " of " +
-            files.length +
-            ":\n" +
-            currentFile,
-            "info"
-        );
+            while(active < 4 && next < total){
 
+                (function(i){
 
-        LIBRARY.downloadFile(
-            currentFile,
-            function(result){
+                    active++;
 
-                if(!result.success){
+                    LIBRARY.downloadFile(files[i], function(r){
 
-                    notify(
-                        "Unable to download:\n" +
-                        currentFile +
-                        "\n\n" +
-                        result.error,
-                        "error"
-                    );
+                        active--;
 
+                        if(failed){ return; }
 
-                    callback({
+                        if(!r.success){
 
-                        success: false,
+                            failed = true;
 
-                        error:
-                            result.error
+                            notify(
+                                "Unable to download:\n" + files[i] + "\n\n" + r.error,
+                                "error"
+                            );
+
+                            callback({ success: false, error: r.error });
+                            return;
+
+                        }
+
+                        results[i] = r;
+                        done++;
+
+                        if(LIBRARY.onProgress){
+                            LIBRARY.onProgress("download", done, total, files[i]);
+                        }
+
+                        if(done === total){
+                            callback({ success: true, files: results });
+                            return;
+                        }
+
+                        launch();
 
                     });
 
-                    return;
-
-                }
-
-
-                downloaded.push(result);
-
-
-                LIBRARY.downloadFiles(
-                    files,
-                    index + 1,
-                    downloaded,
-                    callback
-                );
+                })(next++);
 
             }
-        );
+
+        }
+
+        launch();
 
     },
+
 
 
     // ==========================================
@@ -631,6 +618,14 @@ var LIBRARY = {
 
         }
 
+
+        // Same content already in the library: nothing to write.
+        var existing = window.cep.fs.readFile(filePath);
+
+        if(existing && existing.err === 0 && existing.data === content){
+            callback({ success: true, path: filePath, skipped: true });
+            return;
+        }
 
         // Written by the panel (cep.fs) instead of ExtendScript.
         // Decoding large files in ExtendScript blocks Illustrator
@@ -747,15 +742,9 @@ var LIBRARY = {
             files[index];
 
 
-        notify(
-            "Writing file " +
-            (index + 1) +
-            " of " +
-            files.length +
-            ":\n" +
-            currentFile.path,
-            "info"
-        );
+        if(LIBRARY.onProgress){
+            LIBRARY.onProgress("write", index, files.length, currentFile.path);
+        }
 
 
         LIBRARY.writeCacheFile(
@@ -875,12 +864,9 @@ var LIBRARY = {
         // DOWNLOAD FILES
         // ==========================================
 
-        notify(
-            "Downloading files for V" +
-            manifest.version +
-            "...",
-            "info"
-        );
+        if(LIBRARY.onProgress){
+            LIBRARY.onProgress("start", 0, files.length, "V" + manifest.version);
+        }
 
 
         LIBRARY.downloadFiles(

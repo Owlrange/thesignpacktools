@@ -3,33 +3,26 @@
 //  Author: Joao Victor Malz
 //  Copyright: (c) 2026 Joao Victor Malz
 //  Created for use at The Sign Pack
-//  ---------------------------------------------------------
-//  Relinks the linked images and placed documents (PDF, AI, PNG, JPG...)
-//  of the open file, more reliably than the Links panel:
+//
+//  Relinks the linked images and placed documents (PDF, AI, PNG, JPG...) of the open
+//  file, more reliably than the Links panel:
 //   - Lists every link with its status (OK / Missing) and the folder it points to.
-//   - "Search folder...": pick a folder; the script searches it and all its
-//     subfolders for each link by file name and relinks what it finds. It
-//     relinks the selected links, or the missing ones if nothing is selected.
-//     If several files fit, you choose; each question is asked once.
-//   - Optional looser match: same name with another extension or version
-//     (_v2, _v3...).
+//   - "Search folder...": pick a folder; the script searches it and all its subfolders
+//     for each link by file name and relinks what it finds. It relinks the selected
+//     links, or the missing ones if nothing is selected. If several files fit, you
+//     choose; each question is asked once.
+//   - Optional looser match: same name with another extension or version (_v2, _v3...).
 //   - "Relink selected to a file...": one file for the selected links.
 //   - Embedded images: an embedded image has no link to repoint, so it is replaced:
-//     select it in the list (images selected in the document start selected), give
-//     a file or search a folder, and the file is placed in the same spot (same
-//     stacking position, centered, fitted inside the old size, same opacity) and
-//     the old image is removed. Linked by default; an option embeds it again.
-//     Rotated, skewed or flipped images keep their transform (it is copied and checked;
-//     if the check fails, the old image is kept and the reason is shown).
-//     Without a name to go on, pick the file by hand.
-//   - DPI column: the resolution of each image at its size in the file (72 / scale,
-//     the same as Preflight and Check Image Quality); "[LOW]" under 150; "vector" for
-//     placed PDF / AI / EPS / SVG files. After a relink it shows the new value.
-//   - After each relink the script checks that the link really changed, and
-//     reports what was relinked, not found, skipped or failed.
-//   - New look: dark grey window, white text, green accents, The Sign Pack logo and title at the
-//     top, green rounded "Search folder..." button. STYLED_UI = false (near the top of the script)
-//     gives the plain system look back. Nothing else changes in how it works.
+//     select it in the list, give a file or search a folder, and the file is placed in
+//     the same spot (same stacking position, centered, fitted inside the old size, same
+//     opacity) and the old image is removed. Linked by default; an option embeds it
+//     again. Rotated, skewed or flipped images keep their transform (it is copied and
+//     checked; if the check fails, the old image is kept and the reason is shown).
+//   - DPI column: the resolution of each image at its size in the file (72 / scale);
+//     "[LOW]" under 150; "vector" for placed PDF / AI / EPS / SVG files.
+//   - After each relink the script checks that the link really changed, and reports
+//     what was relinked, not found, skipped or failed.
 //   - "Keep each image's position and size" (on): the image goes back to the old
 //     center and fits inside the old size, so a new file does not jump or resize.
 // ============================================================

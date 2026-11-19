@@ -1,11 +1,11 @@
 #target illustrator
 
 // Message handed back to Sign Pack Tools (the status bar shows it): SUCCESS: / WARNING: / ERROR:
-var TSP_NAME = "Export Production Files 3.0";
+var TSP_NAME = "Export Production Files 3.3";
 var TSP_RESULT = "";
 
 // ============================================================
-//  Export Production Files 3.0
+//  Export Production Files 3.3
 //  Author: Joao Victor Malz
 //  Copyright: (c) 2026 Joao Victor Malz
 //  Created for use at The Sign Pack
@@ -14,73 +14,25 @@ var TSP_RESULT = "";
 //  PDF, and optionally .ai, .eps, .png and .svg, from a clean copy of the
 //  open file. Your open file is never changed.
 //
-//  Speed: screen redraw at most once per second, garbage collection every 5th artboard, and the
-//  temporary master copy is saved without PDF-compatible data.
-//  "AI: make it PDF-compatible" is now OFF by default.
+//  Before exporting one set of files per artboard, the longest full file path is
+//  checked (Windows stops at 260 characters). Over 250 = nothing is exported and the
+//  message lists the artboards. If something fails, the error says which step and which
+//  artboard it was on.
 //
-//  Changes in 3.0:
-//   - Windows no longer keeps the output folder "in use" after an export: the temporary build
-//     files are made in the Windows Temp folder (not in the output folder, where OneDrive and
-//     leftovers could lock it), leftovers from an interrupted earlier run are closed and deleted at the
-//     start of every run, and the clean-up always runs. If Illustrator will not open the copy from the
-//     Temp folder, it falls back to the old way (temporary files in the output folder).
-//   - New PDF options: Trim marks and Registration marks (advanced and simple window).
-//     PDF only (the single and the combined PDF); the .ai, .eps, .png and .svg are not
-//     touched. Standard 0.25 pt weight. In the advanced window they are remembered with
-//     the other options; in the simple window they start off every time.
-//
-//  Changes in 2.6:
-//   - Renamed from "Export All PDFs" to "Export Production Files".
-//   - The company logo (white on dark UI, black on light UI) shows at the top
-//     of the main window.
-//   - New look: dark grey window, white text, green panel titles, a thin green line under the
-//     header, The Sign Pack logo and the title (EXPORT PRODUCTION FILES) at the top, and a
-//     green rounded Export button. STYLED_UI = false (near the top of the script) gives the
-//     plain system look back.
-//   - Wide layout only (the tall layout and its checkbox are gone). The advanced window is
-//     grouped by topic in 3 columns: 1 Where to save, 2 File name, 3 Formats, 4 Bleed,
-//     5 Artboards. The simple window is wide too (2 columns, 3 topics). Both open at the
-//     standard spot (90, 140).
-//   - Wording: "PDF: keep Illustrator editing capabilities", "PDF: do not open it after
-//     saving", ".ai file" with "AI: make it PDF-compatible" under it, and one red line for the
-//     two overwrite warnings.
-//   - Same layout rules as the other scripts: action buttons on the left, Close
-//     on the right, title 15 bold, margins 16 / spacing 10, main window at the
-//     standard spot (90, 140). Popups are dark Illustrator-style windows, centered.
-//   - Nothing else changes in how it works.
-//
-//  Changes in 2.5:
-//   - Nothing changes in how it works. The long version history that sat
-//     here was moved to "Export_Production_Files_Changelog.txt".
-//
-//  Changes in 2.4:
-//   - New: "Also save as .png" (300 ppi, transparent background) and
-//     "Also save as .svg" (SVG 1.1, text outlined, images embedded). One
-//     file per artboard, also in combined mode. A PNG larger than 16000 px
-//     is scaled down and the Done window says so.
-//   - New: Client dropdown at the top. The list is read from "Clients_x.x.json" in the
-//     same folder as this script (standard The Sign Pack if the file is missing).
-//   - New: "Smart name" button: project number from the file name, the
-//     project's "Final Production Files" / "Production Files" folder, and
-//     the next free version found there.
-//   - New: "Open Folder" button on the Done window.
-//
-//  Combined mode (since 2.1): the PDF is saved straight from a copy of the
-//  whole document using Illustrator's own artboard range (e.g. "1,4,6").
-//  .ai / .eps need content stripped to the chosen artboards, so every item
-//  that does not overlap a chosen artboard (plus the chosen bleed) is
-//  deleted from one prepared copy. No content is copied between documents.
+//  Combined mode: the PDF is saved straight from a copy of the whole document using
+//  Illustrator's own artboard range (e.g. "1,4,6"). .ai / .eps need content stripped to
+//  the chosen artboards, so every item that does not overlap a chosen artboard (plus the
+//  chosen bleed) is deleted from one prepared copy. No content is copied between documents.
 //
 //  Lessons kept (reasons are next to the code):
 //   - PDF compatibility must be ACROBAT7 or higher (Large Canvas).
 //   - EPS compatibility must be left unset (Large Canvas).
 //   - The edge check uses a small tolerance for float noise.
 //
-//  MAINTENANCE NOTE: this script relies on Illustrator's own
-//  'selectallinartboard' menu command to isolate each artboard's
-//  content. Adobe has changed this command's behavior between
-//  versions before. After ANY Illustrator update, spot-check one
-//  exported PDF against the source file before trusting a batch.
+//  MAINTENANCE NOTE: this script relies on Illustrator's own 'selectallinartboard' menu
+//  command to isolate each artboard's content. Adobe has changed this command's behavior
+//  between versions before. After ANY Illustrator update, spot-check one exported PDF
+//  against the source file before trusting a batch.
 // ============================================================
 
 function exportProductionFilesV2() {
@@ -341,7 +293,7 @@ function exportProductionFilesV2() {
 
     function styledAlert(message, title) {
         try {
-            var dlg = new Window("dialog", title || "Export Production Files 3.0");
+            var dlg = new Window("dialog", title || "Export Production Files 3.3");
             dlg.orientation = "column";
             dlg.alignChildren = ["fill", "top"];
             dlg.margins = 20;
@@ -366,7 +318,7 @@ function exportProductionFilesV2() {
     // sections = [{ title: "...", items: ["...", ...] }]
     function showResultDialog(heading, lines, sections, folderFsName) {
         try {
-            var dlg = new Window("dialog", "Export Production Files 3.0");
+            var dlg = new Window("dialog", "Export Production Files 3.3");
             dlg.orientation = "column";
             dlg.alignChildren = ["center", "top"];
             dlg.margins = [40, 30, 40, 30];
@@ -437,7 +389,7 @@ function exportProductionFilesV2() {
 
     // ---------- main window ----------
 
-    var win = new Window("dialog", "Export Production Files 3.0");
+    var win = new Window("dialog", "Export Production Files 3.3");
     paintWin(win);   // dark grey first: the UI Kit picks the white logo on a dark window
     win.orientation = "column"; win.alignChildren = ["fill", "top"]; win.margins = uik().MARGINS; win.spacing = uik().SPACING;
 
@@ -1285,6 +1237,7 @@ function exportProductionFilesV2() {
         var aiPdfCompatible = chkAiPdfCompatible.value;
         var openFolderWhenDone = chkOpenFolder.value;
         var exportedCount = 0;
+        var curStep = "";   // what the export was doing (shown if an error stops it)
         var cancelRequested = false;
 
         try { win.close(); } catch (eWc) {}   // (the simple window runs this without showing this window)
@@ -1946,6 +1899,28 @@ function exportProductionFilesV2() {
                 exportedCount = cancelRequested ? 0 : total;
             } else {
                 // ---------- normal mode: one set of files per artboard ----------
+                // Check the longest file path first (Windows limit is 260 characters)
+                var MAX_PATH_LEN = 250;
+                var longPaths = [];
+                for (var pk = 0; pk < total; pk++) {
+                    var pAbName = cleanAbName(doc.artboards[abIndices[pk]].name, abIndices[pk]);
+                    var pPrefix = (customNameInput !== "") ? customNameInput : (cleanDocName + " ");
+                    var pBase = includeArtboardName ? (pPrefix + pAbName) : pPrefix;
+                    pBase = pBase.replace(/[\s.]+$/, '');
+                    if (pBase === "") pBase = pAbName;
+                    var pFolder = destFolder.fsName;
+                    if (folderMode === 1) pFolder += "/" + pAbName;
+                    else if (folderMode === 2) pFolder += "/" + "PNG";
+                    var pLen = (pFolder + "/" + pBase + ".pdf").length;
+                    if (pLen > MAX_PATH_LEN) longPaths.push(pAbName + " (" + pLen + " characters)");
+                }
+                if (longPaths.length > 0) {
+                    var lpShow = longPaths.slice(0, 5).join("\n   ");
+                    if (longPaths.length > 5) lpShow += "\n   ... and " + (longPaths.length - 5) + " more";
+                    throw new Error("The file paths are too long for Windows (limit about 260 characters, checked at " + MAX_PATH_LEN + "). Nothing was exported.\n\n   " + lpShow +
+                        "\n\nChoose a shorter output folder (for example C:\\Export) or shorten the file / artboard names.");
+                }
+
                 for (var k = 0; k < total; k++) {
                     if (cancelRequested) break;
 
@@ -1972,6 +1947,7 @@ function exportProductionFilesV2() {
                     tempAiFile = tmpFile("_temp_" + i + ".ai");
                     masterTempFile.copy(tempAiFile);
 
+                    curStep = "Artboard \"" + cleanArtboardName + "\": opening the temporary copy";
                     tempDoc = app.open(tempAiFile);
 
                     tempDoc.selection = null;
@@ -2037,6 +2013,7 @@ function exportProductionFilesV2() {
                     }
 
                     addPdfMarks(pdfSaveOpts);
+                    curStep = "Artboard \"" + cleanArtboardName + "\": saving the PDF to " + pdfTargetFile.fsName + " (" + pdfTargetFile.fsName.length + " characters)";
                     tempDoc.saveAs(pdfTargetFile, pdfSaveOpts);
                     pumpUI();
 
@@ -2046,6 +2023,7 @@ function exportProductionFilesV2() {
                         if (confirmAiOverwrite(aiTargetFile)) {
                             var aiSaveOpts = new IllustratorSaveOptions();
                             aiSaveOpts.pdfCompatible = aiPdfCompatible;
+                            curStep = "Artboard \"" + cleanArtboardName + "\": saving the AI to " + aiTargetFile.fsName + " (" + aiTargetFile.fsName.length + " characters)";
                             tempDoc.saveAs(aiTargetFile, aiSaveOpts);
                             pumpUI();
                         } else {
@@ -2068,12 +2046,14 @@ function exportProductionFilesV2() {
                         try { epsSaveOpts.postScript = PostScriptLevelEnum.LEVEL3; } catch (ePS) {}
                         try { epsSaveOpts.compatibleGradientPrinting = true; } catch (eGP) {}
                         try { epsSaveOpts.embedLinkedFiles = true; } catch (eEL) {}
+                        curStep = "Artboard \"" + cleanArtboardName + "\": saving the EPS to " + epsTargetFile.fsName + " (" + epsTargetFile.fsName.length + " characters)";
                         tempDoc.saveAs(epsTargetFile, epsSaveOpts);
                     }
 
                     if (savePng || saveSvg) {
                         var pngDestFolder = (folderMode === 2) ? getOrCreateFolder(destFolder, "PNG") : artboardDestFolder;
                         var svgDestFolder = (folderMode === 2) ? getOrCreateFolder(destFolder, "SVG") : artboardDestFolder;
+                        curStep = "Artboard \"" + cleanArtboardName + "\": exporting the PNG / SVG";
                         exportExtras(tempDoc, baseFileName, pngDestFolder, svgDestFolder, cleanArtboardName);
                         pumpUI();
                     }
@@ -2165,6 +2145,7 @@ function exportProductionFilesV2() {
             try { progWin.close(); } catch (ePc2) {}
             TSP_RESULT = "ERROR: " + TSP_NAME + ": " + error.message;
             styledAlert("The export stopped because of an error:\n" + error.message +
+                  (curStep !== "" && !/too long for Windows/.test(error.message) ? "\n\nWhat it was doing: " + curStep : "") +
                   "\n\nFiles exported before the error: " + exportedCount + " of " + total + " artboards." +
                   "\nTemporary files were cleaned up. Fix the problem and run the export again.");
         }
@@ -2190,7 +2171,7 @@ function exportProductionFilesV2() {
     var simpleName = "", simpleCombined = false, simpleAbName = false, simpleFolders = false, simpleTrim = false, simpleReg = false;
     function showSimple() {
         var choice = "";
-        var sw = new Window("dialog", "Export Production Files 3.0");
+        var sw = new Window("dialog", "Export Production Files 3.3");
         paintWin(sw);   // dark grey first: the UI Kit picks the white logo on a dark window
         sw.orientation = "column"; sw.alignChildren = ["fill", "top"]; sw.margins = uik().MARGINS; sw.spacing = uik().SPACING;
         var lr = sw.add("group");

@@ -1,10 +1,13 @@
 {
-    "version": "1.1",
-    "releaseDate": "2026-11-18",
-    "releaseNotes": "Standardize PDFs 2.0:\n- New look: dark theme with green accents and The Sign Pack logo.\n- Page height fixed at 11\" (8.5\" for Pittsburgh); Auto, Custom height and Margin options removed.\n- Auto-selects Presentation artboards (or Proof) and moves them to the top of the list.\n- Pittsburgh and Lacey detection from the folder or file name.\n- New: export pages as PNG files in a zip (on by default for Lacey).\n- New: renames exported artboards to Presentation 1, 2...\n- Warns when a page's proportion does not match its artboard.\n- More reliable file opening/copying; fixed the \"there is no document\" error.\n\nUI Kit / SQFT Calculator:\n- Logos updated to the new brand identity.",
-   "files": [
-    "scripts/Standardize_PDFs.jsx",
-    "scripts/UI_Kit_1.0.jsx",
-    "scripts/SQFT_Calculator.jsx"
+    "version": "1.2",
+    "releaseDate": "2026-11-19",
+    "releaseNotes": "Production Helper 1.0:\n- CutContour follows the manual workflow (Expand Appearance, Outline Stroke, Pathfinder Unite, magenta stroke, Release Compound Path, group).\n- Pro version no longer overwrites the cut line of another element.\n\nStandardize PDFs 2.0:\n- The Lacey PNG zip is named just <PDF name>.zip.\n\nSQFT Callout 2.2:\n- The ball is now a real arrowhead (needs SQFT_Arrow.aia); bigger default size.\n\nExport Production Files 3.3:\n- Warns before exporting when file paths are too long for Windows; errors say which step failed.\n\nMenu:\n- Tool names in the menu now match the script names.",
+    "files": [
+        "menu.js",
+        "scripts/Production_Helper.jsx",
+        "scripts/Standardize_PDFs.jsx",
+        "scripts/SQFT_Callout.jsx",
+        "scripts/SQFT_Arrow.aia",
+        "scripts/Export_Production_Files.jsx"
     ]
 }

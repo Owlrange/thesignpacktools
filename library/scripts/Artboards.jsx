@@ -4,33 +4,17 @@
 //  Copyright: (c) 2026 Joao Victor Malz
 //  Created for use at The Sign Pack
 //
-//  Layout standard (same in all scripts):
-//  - Action buttons on the left, Close on the right; title 15 bold; margins 16 / spacing 10;
-//    main window at the standard spot (90, 140); popups are dark Illustrator-style windows,
-//    centered (not the white system boxes).
-//
 //  One palette, two tabs:
-//   - Create: creates artboards fitted to the selected arts, in
-//     visual order (top-to-bottom, left-to-right), and names them
-//     S#, OP A, Presentation X... or, for signs with options,
-//     S1 OPA, S1 OPB, S2 OPA... (a sign = a row, a column or a group).
-//   - Rename: batch renames artboards. Modes: build new names (prefix,
-//     separator, numbering, padding, suffix), add to the current names, or
-//     find and replace. Choose all artboards, the ones that contain the
-//     selected art, or a range. "Preview on this file" and a check before
-//     renaming list the changes.
-//
-//  1.5: Fix for the "Expected: )" error on some computers (the code sent to Illustrator now travels as
-//  plain hex digits). Nothing else changed.
-//  1.0: merge of Create Artboards 2.2 and Rename Artboards 1.2.
-//  The artboard code of both is unchanged.
-//  New look: dark grey window, white text, green accents, The Sign Pack logo and title at the top,
-//  green rounded Create / Rename button. The Create / Rename tabs are two buttons now.
-//  STYLED_UI = false (near the top of the script) gives the plain system look back.
+//   - Create: creates artboards fitted to the selected arts, in visual order
+//     (top-to-bottom, left-to-right), and names them S#, OP A, Presentation X...
+//     or, for signs with options, S1 OPA, S1 OPB, S2 OPA... (a sign = a row, a
+//     column or a group).
+//   - Rename: batch renames artboards. Modes: build new names (prefix, separator,
+//     numbering, padding, suffix), add to the current names, or find and replace.
+//     Choose all artboards, the ones that contain the selected art, or a range.
+//     "Preview on this file" and a check before renaming list the changes.
 // ============================================================
 
-//  Fix (Nov 2026): the code this script sends to Illustrator now travels as plain hex digits, so the error
-//  "Expected: )" (backslashes doubled on some computers) can no longer happen. Nothing else changed.
 
 #target illustrator
 #targetengine "signpack_artboards"

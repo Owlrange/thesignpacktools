@@ -96,6 +96,16 @@ function createAccordion(container, menu){
             button.title =
                 tool.description;
 
+            // text used by the search box (name, description and tags)
+            button.setAttribute(
+                "data-search",
+                (
+                    tool.title + " " +
+                    (tool.description || "") + " " +
+                    (tool.tags || []).join(" ")
+                ).toLowerCase()
+            );
+
 
             // ======================================
             // TOOL TITLE
@@ -251,6 +261,11 @@ function createAccordion(container, menu){
                         "open"
                     );
 
+                item.setAttribute(
+                    "data-user-open",
+                    opened ? "1" : "0"
+                );
+
 
                 if(opened){
 
@@ -310,95 +325,107 @@ function renderMenu(menu){
 
 function filterMenu(){
 
-    var search =
-        document.getElementById(
-            "search"
-        );
+    var search = document.getElementById("search");
+    var accordion = document.getElementById("accordion");
 
-
-    if(!search){
-
+    if(!search || !accordion){
         return;
+    }
+
+    var text = search.value.toLowerCase().replace(/^\s+|\s+$/g, "");
+
+    var items = accordion.querySelectorAll(".item");
+
+    for(var i = 0; i < items.length; i++){
+
+        var item = items[i];
+        var content = item.querySelector(".content");
+        var tools = item.querySelectorAll(".tool");
+        var matches = 0;
+
+        for(var t = 0; t < tools.length; t++){
+
+            var ok =
+                text === "" ||
+                (tools[t].getAttribute("data-search") || "").indexOf(text) !== -1;
+
+            tools[t].style.display = ok ? "" : "none";
+
+            if(ok){ matches++; }
+
+        }
+
+        if(text === ""){
+
+            // back to what the person had open before searching
+            var wasOpen = item.getAttribute("data-user-open") === "1";
+
+            item.style.display = "";
+            item.classList.toggle("open", wasOpen);
+            content.style.maxHeight = wasOpen ? content.scrollHeight + "px" : "0px";
+
+        }
+        else if(matches > 0){
+
+            // open the categories that have a match
+            item.style.display = "";
+            item.classList.add("open");
+            content.style.maxHeight = content.scrollHeight + "px";
+
+        }
+        else{
+
+            item.style.display = "none";
+
+        }
 
     }
 
-
-    var text =
-        search.value.toLowerCase();
+}
 
 
-    // ======================================
-    // SHOW FULL MENU
-    // ======================================
+// ==========================================
+// UPDATE BAR (bottom of the panel)
+// ==========================================
 
-    if(text === ""){
+var updateBarTimer = null;
 
-        renderMenu(
-            MENU
-        );
+function showUpdateBar(text, percent, state){
 
+    var bar = document.getElementById("updateBar");
+    var label = document.getElementById("updateText");
+    var fill = document.getElementById("updateFill");
+
+    if(!bar || !label || !fill){
         return;
-
     }
 
+    if(updateBarTimer){
+        clearTimeout(updateBarTimer);
+        updateBarTimer = null;
+    }
 
-    // ======================================
-    // FILTER TOOLS
-    // ======================================
+    bar.className = state || "";
+    label.textContent = text;
+    fill.style.width = Math.max(0, Math.min(100, percent)) + "%";
 
-    var filtered =
-        MENU
-            .map(function(category){
+}
 
-                var tools =
-                    category.tools.filter(
-                        function(tool){
+function hideUpdateBar(delayMs){
 
-                            return (
-                                tool.title
-                                    .toLowerCase()
-                                    .indexOf(text) !== -1 ||
+    var bar = document.getElementById("updateBar");
 
-                                tool.description
-                                    .toLowerCase()
-                                    .indexOf(text) !== -1
-                            );
+    if(!bar){
+        return;
+    }
 
-                        }
-                    );
+    if(updateBarTimer){
+        clearTimeout(updateBarTimer);
+    }
 
-
-                return {
-
-                    id:
-                        category.id,
-
-                    title:
-                        category.title,
-
-                    icon:
-                        category.icon,
-
-                    tools:
-                        tools
-
-                };
-
-            })
-            .filter(
-                function(category){
-
-                    return (
-                        category.tools.length >
-                        0
-                    );
-
-                }
-            );
-
-
-    renderMenu(
-        filtered
-    );
+    updateBarTimer = setTimeout(function(){
+        bar.className = "hidden";
+        updateBarTimer = null;
+    }, delayMs || 0);
 
 }

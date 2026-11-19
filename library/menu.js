@@ -35,7 +35,7 @@ const MENU = [
 
             {
                 id: "exportproduction",
-                title: "Export To Production",
+                title: "Export Production Files",
                 description: "Export Production Files",
 				help: "",
 				tags: []
@@ -43,7 +43,7 @@ const MENU = [
 
             {
                 id: "flexiexport",
-                title: "Safe Export To Flexi",
+                title: "Flexi-Safe Export",
                 description: "Export to open in Flexi without any issues.",
 				help: "",
 				tags: []
@@ -51,7 +51,7 @@ const MENU = [
 
             {
                 id: "standardize",
-                title: "Standardize Layout",
+                title: "Standardize PDFs",
                 description: "Make the multi-page presentation PDF, all pages the same size",
 				help: "",
 				tags: ["Presentation", "PDF"]
@@ -94,7 +94,7 @@ const MENU = [
 
             {
                 id: "relink",
-                title: "Relink Missing Links",
+                title: "Relink Links",
                 description: "Fix missing or wrong links and embedded images",
 				help: "",
 				tags: ["Image"]
@@ -156,7 +156,7 @@ const MENU = [
 			
 			{
                 id: "preflightcheck",
-                title: "Pre-flighting",
+                title: "Preflight Check",
                 description: "Checks the file for potential production issues before manufacturing.",
 				help: "",
 				tags: []

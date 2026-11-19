@@ -4,50 +4,32 @@
 //  Copyright: (c) 2026 Joao Victor Malz
 //  Created for use at The Sign Pack
 //
-//  Speed: the top-level item list is read straight from each layer (when the file has no
-//  sub-layers) and every path is read once and shared by Unused Swatches, Named Colors, Hairline
-//  Strokes and Stacked Duplicates.
-//
-//  Layout standard (same in all scripts):
-//  - Action buttons on the left, Close on the right; title 15 bold; margins 16 / spacing 10;
-//    main window at the standard spot (90, 140); popups are dark Illustrator-style windows,
-//    centered (not the white system boxes).
-//
-//  New look: dark grey window, white text, green accents, The Sign Pack logo and title at the top,
-//  green rounded Fix button. STYLED_UI = false (near the top of the script) gives the plain system
-//  look back. Nothing else changes in how it works.
-//
-//  Two sections, every row shows a status icon (no words):
-//    green check   = OK
-//    yellow triangle = warning, go check it
-//    red cross     = wrong, needs to change
-//    grey dash     = not run
+//  Checks the open file before export. Two sections, every row shows a status icon:
+//    green check = OK, yellow triangle = warning, red cross = wrong, grey dash = not run.
 //
 //  STANDARD CHECKS (always, every job):
 //    Image DPI, Unused swatches, Text (live / missing font / overset),
 //    File color mode, Open paths (production layers only),
 //    Clipping masks (hidden ones are red), External links.
 //
-//  SIGN TYPE CHECKS (pick the sign type in the dropdown). The list of sign
-//  types and the layers each one needs come from "Sign_Types_x.x.json"; the
-//  Client list from "Clients_x.x.json" (both in the same folder as this script).
-//    Layers: every layer of the sign type must exist (missing = wrong), with its
-//            exact name (a different spelling = wrong, only capitals / spaces = warning)
+//  SIGN TYPE CHECKS (pick the sign type in the dropdown). The list of sign types and
+//  the layers each one needs come from "Sign_Types_x.x.json"; the Client list from
+//  "Clients_x.x.json" (both in the same folder as this script).
+//    Layers: every layer of the sign type must exist (missing = wrong), with its exact
+//            name (a different spelling = wrong, only capitals / spaces = warning)
 //            and the right layer colour. The Fix button creates / renames / recolours.
 //    Layer Art: on layers with a rule, paths need the stroke (1 pt) and colour
 //            (100% black or 100% magenta / CutContour spot). Free layers are not checked.
 //    Plus: hairline strokes, stacked duplicates, items off the artboard, artboard size.
-//  Scope: with nothing selected the whole file is checked (or the artboard picked in
-//  the list); with something selected only that art is checked (the layers are always
-//  checked for the whole file).
+//  Scope: with nothing selected the whole file is checked (or the artboard picked in the
+//  list); with something selected only that art is checked (the layers are always checked
+//  for the whole file).
 //
-//  "View" on a row lists its items below; double-click an item to jump
-//  to it. All read-only except the focus/select action. Thresholds and
-//  production layer names are in SETTINGS below.
+//  "View" on a row lists its items below; double-click an item to jump to it. All
+//  read-only except the focus/select action. Thresholds and production layer names
+//  are in SETTINGS below.
 // ============================================================
 
-//  Fix (Nov 2026): the code this script sends to Illustrator now travels as plain hex digits, so the error
-//  "Expected: )" (backslashes doubled on some computers) can no longer happen. Nothing else changed.
 
 #target illustrator
 #targetengine "signpack_preflight"

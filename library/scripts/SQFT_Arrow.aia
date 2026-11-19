@@ -1,0 +1,172 @@
+/version 3
+/name [ 4
+	53514654
+]
+/isOpen 0
+/actionCount 1
+/action-1 {
+	/name [ 10
+		53514654204172726f77
+	]
+	/keyIndex 0
+	/colorIndex 0
+	/isOpen 0
+	/eventCount 2
+	/event-1 {
+		/useRulersIn1stQuadrant 0
+		/internalName (ai_plugin_setStroke)
+		/localizedName [ 10
+			536574205374726f6b65
+		]
+		/isOpen 0
+		/isOn 1
+		/hasDialog 0
+		/parameterCount 7
+		/parameter-1 {
+			/key 2003072104
+			/showInPalette -1
+			/type (unit real)
+			/value 3.0
+			/unit 592476268
+		}
+		/parameter-2 {
+			/key 1667330094
+			/showInPalette -1
+			/type (enumerated)
+			/name [ 8
+				4275747420436170
+			]
+			/value 0
+		}
+		/parameter-3 {
+			/key 1836344690
+			/showInPalette -1
+			/type (real)
+			/value 10.0
+		}
+		/parameter-4 {
+			/key 1785686382
+			/showInPalette -1
+			/type (enumerated)
+			/name [ 10
+				4d69746572204a6f696e
+			]
+			/value 0
+		}
+		/parameter-5 {
+			/key 1684825454
+			/showInPalette -1
+			/type (integer)
+			/value 0
+		}
+		/parameter-6 {
+			/key 1684104298
+			/showInPalette -1
+			/type (boolean)
+			/value 0
+		}
+		/parameter-7 {
+			/key 1634494318
+			/showInPalette -1
+			/type (enumerated)
+			/name [ 6
+				43656e746572
+			]
+			/value 0
+		}
+	}
+	/event-2 {
+		/useRulersIn1stQuadrant 0
+		/internalName (ai_plugin_setStroke)
+		/localizedName [ 10
+			536574205374726f6b65
+		]
+		/isOpen 0
+		/isOn 1
+		/hasDialog 0
+		/parameterCount 11
+		/parameter-1 {
+			/key 2003072104
+			/showInPalette -1
+			/type (unit real)
+			/value 3.0
+			/unit 592476268
+		}
+		/parameter-2 {
+			/key 1667330094
+			/showInPalette -1
+			/type (enumerated)
+			/name [ 8
+				4275747420436170
+			]
+			/value 0
+		}
+		/parameter-3 {
+			/key 1836344690
+			/showInPalette -1
+			/type (real)
+			/value 10.0
+		}
+		/parameter-4 {
+			/key 1785686382
+			/showInPalette -1
+			/type (enumerated)
+			/name [ 10
+				4d69746572204a6f696e
+			]
+			/value 0
+		}
+		/parameter-5 {
+			/key 1684825454
+			/showInPalette -1
+			/type (integer)
+			/value 0
+		}
+		/parameter-6 {
+			/key 1684104298
+			/showInPalette -1
+			/type (boolean)
+			/value 0
+		}
+		/parameter-7 {
+			/key 1634231345
+			/showInPalette -1
+			/type (ustring)
+			/value [ 8
+				4172726f77203231
+			]
+		}
+		/parameter-8 {
+			/key 1634231346
+			/showInPalette -1
+			/type (ustring)
+			/value [ 6
+				5b4e6f6e655d
+			]
+		}
+		/parameter-9 {
+			/key 1634951985
+			/showInPalette -1
+			/type (real)
+			/value 100.0
+		}
+		/parameter-10 {
+			/key 1634230636
+			/showInPalette -1
+			/type (enumerated)
+			/name [ 15
+				546970204174205061746820456e64
+			]
+			/value 0
+		}
+		/parameter-11 {
+			/key 1634494318
+			/showInPalette -1
+			/type (enumerated)
+			/name [ 6
+				43656e746572
+			]
+			/value 0
+		}
+	}
+}

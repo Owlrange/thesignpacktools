@@ -15,7 +15,7 @@ body{
 
 body{
 
-    background:#535353;
+    background:#2B2B2B;
     color:#e5e5e5;
     font-size:13px;
     overflow:hidden;
@@ -44,15 +44,70 @@ header{
 
 header h1{
 
-    font-size:16px;
-    margin-bottom:2px;
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:.5px;
+    color:#34B84C;
+    text-transform:uppercase;
+
+}
+
+.logo{
+
+    height:26px;
+    width:auto;
+    display:block;
 
 }
 
 header small{
 
     color:#999;
+    cursor:default;
 
+}
+
+/* ---- Library update bar (bottom of the panel) ---- */
+
+#updateBar{
+    flex-shrink:0;
+    padding:4px 10px 6px 10px;
+    background:#262626;
+    border-top:1px solid #3d3d3d;
+    font-size:10px;
+    color:#d7d7d7;
+}
+
+#updateBar.hidden{
+    display:none;
+}
+
+.update-track{
+    height:5px;
+    margin-top:3px;
+    background:#3d3d3d;
+    border-radius:3px;
+    overflow:hidden;
+}
+
+.update-fill{
+    height:100%;
+    width:0;
+    background:#22A438;
+    border-radius:3px;
+    transition:width .25s ease;
+}
+
+#updateBar.done .update-text{
+    color:#34B84C;
+}
+
+#updateBar.failed .update-text{
+    color:#ffb3b3;
+}
+
+#updateBar.failed .update-fill{
+    background:#a43a3a;
 }
 
 .header-top{
@@ -64,11 +119,9 @@ header small{
 }
 
 .title-group{
-
     display:flex;
-    align-items:baseline;
-    gap:6px;
-
+    align-items:center;
+    gap:8px;
 }
 
 #reload{
@@ -94,27 +147,26 @@ header small{
 }
 
 #reload:hover{
-
-    background:#4A4A4A;
-
+    background:#3a3a3a;
 }
 
 
 .item{
-
     margin-bottom:6px;
-    border:1px solid #4a4a4a;
+    border:1px solid #3d3d3d;
     overflow:hidden;
+    background:#303030;
+}
 
+.item.open{
+    border-color:#22A438;
 }
 
 .title{
-
     width:100%;
-
-    border:1px solid #4a4a4a;
-
-    background:#535353;
+    border:0;
+    border-left:3px solid #22A438;
+    background:#383838;
 
     color:white;
 
@@ -135,9 +187,7 @@ header small{
 }
 
 .title:hover{
-
-    background:#565656;
-
+    background:#424242;
 }
 
 .content{
@@ -173,12 +223,9 @@ header small{
 }
 
 .tool{
-
-    background:#535353;
-
+    background:#3a3a3a;
     color:white;
-
-    border:1px solid #5f5f5f;
+    border:1px solid #4a4a4a;
 
     padding:5px;
 
@@ -197,9 +244,8 @@ header small{
 }
 
 .tool:hover{
-
-	background:#4d4d4d;
-
+    background:#22A438;
+    border-color:#34B84C;
 }
 
 .tool-help{
@@ -275,12 +321,10 @@ header small{
     padding-left:10px;
     padding-right:36px;
 
-    background:#454545;
-
+    background:#383838;
     color:#FFF;
-	font-size:10px;
-
-    border:1px solid #5A5A5A;
+    font-size:10px;
+    border:1px solid #4a4a4a;
 
 
     outline:none;
@@ -289,7 +333,7 @@ header small{
 
 #search:focus{
 
-    border-color:#7DA2FF;
+    border-color:#34B84C;
 
 }
 
@@ -384,7 +428,7 @@ header small{
 
 }
 #statusBar{
-    border-top:1px solid #5A5A5A;
+    border-top:1px solid #3d3d3d;
     margin-top:5px;
     padding-top:2px;
     background:#323232;
@@ -425,4 +469,30 @@ header small{
 
     color:#ffb3b3 !important;
 
+}
+
+
+/* ---- Connection / update state under the title ---- */
+
+.version-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+#update-state{
+    font-size:10px;
+    color:#999;
+}
+
+#update-state.ok{
+    color:#34B84C;
+}
+
+#update-state.offline{
+    color:#ffcf5a;
+}
+
+#update-state.error{
+    color:#ff9a9a;
 }

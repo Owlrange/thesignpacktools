@@ -1,55 +1,25 @@
 // ============================================================
-//  SQ FT Calculator (UI)  -  for Adobe Illustrator
-//  1.5 - Fix for the "Expected: )" error on some computers (the code sent to Illustrator now travels as
-//        plain hex digits). Nothing else changed.
-//  1.4 - Company logo in the window
+//  SQ FT Calculator (UI) 1.5  -  for Adobe Illustrator
 //  Author: Joao Victor Malz
 //  Copyright: (c) 2026 Joao Victor Malz
 //  Created for use at The Sign Pack
 //
-//  New look (still 1.4): dark grey window, white text, green accents, The Sign Pack logo and title at
-//  the top, green rounded "+ Add Total SQ FT" button. STYLED_UI = false (near the top of the script)
-//  gives the plain system look back.
-//
-//  Changes from 1.3:
-//   - The company logo (white on dark UI, black on light UI) shows at the top.
-//   - The "Copy Number" button is removed (it needed a system command to reach the
-//     clipboard). Click the total (it selects itself) and press Ctrl+C instead.
-//   - Same layout rules as the other scripts: action buttons on the left, Close
-//     on the right, title 15 bold, margins 16 / spacing 10, main window at the
-//     standard spot (90, 140). Popups are dark Illustrator-style windows, centered.
-//
-//  1.3 - Area Calculator merged in (Area Calculator is retired)
-//
-//  Changes from 1.2:
-//   - New "Copy Number" button (it came from Area Calculator): selects the
-//     total so you can press Ctrl+C. Everything else Area Calculator did
-//     (dimensions, sq ft, Scale field, total) was already here.
-//
-//  Changes from 1.1:
-//   - New: "Scale: X : X" field (default 1:1). "1 : 12" means
-//     the art is drawn at 1/12 real size, so measurements get
-//     MULTIPLIED by (right / left) to recover the true size.
-//     Multiplies on top of the automatic Large Canvas correction,
-//     doesn't replace it. Field lives at the bottom of the
-//     palette, above the Total. Calculation, SQ FT, subtotal
-//     and total all update live as you edit either scale field.
-//
-//  Lists every selected art with its dimensions, the sq ft math,
-//  and an editable quantity - then totals everything at the
-//  bottom, updating live as you change quantities.
+//  Lists every selected art with its dimensions, the sq ft math, and an editable
+//  quantity - then totals everything at the bottom, updating live as you change
+//  quantities. Also has a "Scale: X : X" field (default 1:1): "1 : 12" means the art is
+//  drawn at 1/12 real size, so measurements are MULTIPLIED by (right / left) to get the
+//  true size. It multiplies on top of the automatic Large Canvas correction.
 //
 //  Usage:
-//    1. Select one or more arts/groups (each is calculated
-//       separately, clipping masks respected).
-//    2. File > Scripts > SQFT_Calculator
+//    1. Select one or more arts/groups (each is calculated separately, clipping masks
+//       respected).
+//    2. File > Scripts > SQFT Calculator
 //
+//  Click the total (it selects itself) and press Ctrl+C to copy it.
 //  Assumes the document is at real size (1 in = 72 pt).
 //  Large Canvas (1/10 scale) documents are detected automatically.
 // ============================================================
 
-//  Fix (Nov 2026): the code this script sends to Illustrator now travels as plain hex digits, so the error
-//  "Expected: )" (backslashes doubled on some computers) can no longer happen. Nothing else changed.
 
 #target illustrator
 #targetengine "sqftcalc"

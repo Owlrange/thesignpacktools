@@ -4,24 +4,6 @@
 //  Copyright: (c) 2026 Joao Victor Malz
 //  Created for use at The Sign Pack
 //
-//  CutContour (Nov 2026): the art is copied, expanded (Expand Appearance) and its strokes outlined (Outline Stroke),
-//  merged with Pathfinder, made magenta (stroke only), the compound paths are released and everything is grouped on
-//  the CutContour layer. Not used with "Use my selected shapes as they are". Outline and BoundingBox are unchanged.
-//
-//  Pro version (new in this 1.0):  New "Pro version" for people who know what they are doing and do not need the helper
-//  notes: a small window (Production Maker) with one button each for CutContour, BoundingBox, Outline
-//  and White Ink, made straight away from the selected art (or everything on the active artboard),
-//  with its own stroke size in pt next to each button. The "Pro version" button in the Helper
-//  windows opens it and is remembered: the script opens in Pro until you press "Helper" there.
-//
-//  New look: dark grey windows, white text, green accents, The Sign Pack logo and title at the top,
-//  green rounded main buttons (Create, Create Production File, Make from art...). STYLED_UI = false
-//  (near the top of the script) gives the plain system look back. Nothing else changes in how it works.
-//
-//  Layout standard (same in all scripts):
-//  - Action buttons on the left, Close on the right; title 15 bold; margins 16 / spacing 10;
-//    main window at the standard spot (90, 140); popups are dark Illustrator-style windows,
-//    centered (not the white system boxes).
 //  Sign Pack toolkit - helps build a production file step by step.
 //
 //  1. Pick the sign type (same list as Preflight Check).
@@ -41,18 +23,26 @@
 //     Make... button: it builds them from the selected art (or everything on
 //     the active artboard), and ticks the row. "Create" adds the missing
 //     layers of the sign type (empty, right colour) to the open file;
-//     "Make from art..." opens the Make window with everything ticked. With "Skip (no new file)" it
-//     can also save a separate production file (Outline + Holes only).
-//  Needs "Sign_Types_x.x.json" in the same folder as this script (the old
-//  "Sign_Types_x.x.jsx" is only a backup). "Clients_x.x.json" in the same folder
-//  adds the Client list (optional): a client can change the specs of a sign type.
+//     "Make from art..." opens the Make window with everything ticked. With
+//     "Skip (no new file)" it can also save a separate production file
+//     (Outline + Holes only).
 //
-//  Note: new layers start empty, so Preflight's "Empty Layers" check may
-//  warn until you fill them.
+//  CutContour: the art is copied, then Expand Appearance, Outline Stroke and
+//  Pathfinder Unite are applied, the result is made a magenta stroke (CutContour),
+//  the compound paths are released and each top-level group is grouped on the
+//  CutContour layer. Not used with "Use my selected shapes as they are".
+//
+//  Pro version: a small window (Production Maker) with one button each for CutContour,
+//  BoundingBox, Outline and White Ink, made straight away from the selected art (or
+//  everything on the active artboard), each with its own stroke size in pt.
+//
+//  Needs "Sign_Types_x.x.json" in the same folder as this script.
+//  "Clients_x.x.json" in the same folder adds the Client list (optional): a client can
+//  change the specs of a sign type.
+//
+//  Note: new layers start empty, so Preflight's "Empty Layers" check may warn until you fill them.
 // ============================================================
 
-//  Fix (Nov 2026): the code this script sends to Illustrator now travels as plain hex digits, so the error
-//  "Expected: )" (backslashes doubled on some computers) can no longer happen. Nothing else changed.
 
 #target illustrator
 #targetengine "signpack_prodhelper"

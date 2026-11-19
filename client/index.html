@@ -26,14 +26,16 @@
 
                 <div class="title-group">
 
-                   <h1>The Sign Pack Tools</h1>
+                   <img src="icons/logo.svg" class="logo" alt="The Sign Pack">
+
+                   <h1>Tools</h1>
 
                 </div>
 
 
                 <div class="toolbar">
 
-                    <div id="reload">↻</div>
+                    <div id="reload" title="Check for updates and reload">↻</div>
 
                 </div>
 
@@ -41,7 +43,13 @@
 			
 
 
-            <small id="plugin-version"></small>
+            <div class="version-row">
+
+                <small id="plugin-version"></small>
+
+                <small id="update-state"></small>
+
+            </div>
 
 
             <div class="search-container">
@@ -64,6 +72,17 @@
 
 
         <div id="accordion"></div>
+
+
+        <div id="updateBar" class="hidden">
+
+            <div class="update-text" id="updateText"></div>
+
+            <div class="update-track">
+                <div class="update-fill" id="updateFill"></div>
+            </div>
+
+        </div>
 
 
         <div
